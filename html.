@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecretMsg - Présentation & Démo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .presentation {
+            width: 100%;
+            max-width: 800px; /* S'adapte aux grands écrans */
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 30px;
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 30px 60px rgba(102, 126, 234, 0.4);
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo {
+            font-size: clamp(50px, 8vw, 70px);
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: clamp(32px, 6vw, 48px);
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea, #f50057);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: clamp(16px, 4vw, 20px);
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 40px;
+        }
+        .features {
+            display: flex;
+            flex-wrap: wrap; /* Permet d'empiler sur mobile */
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+        .feature {
+            flex: 1 1 200px; /* Rendu adaptatif */
+            text-align: center;
+            padding: 10px;
+        }
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .feature-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+        }
+        .feature-desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 5px;
+        }
+        .highlight {
+            background: rgba(245, 0, 87, 0.2);
+            border: 2px solid #f50057;
+            border-radius: 15px;
+            padding: 15px 30px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 500px;
+        }
+        .highlight p {
+            font-size: clamp(15px, 4vw, 18px);
+            font-weight: 700;
+            color: #f50057;
+        }
+        .vs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .ngl {
+            text-decoration: line-through;
+            color: rgba(255,255,255,0.4);
+        }
+        .secretmsg {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        /* --- NOUVELLE SECTION INTERACTIVE --- */
+        .demo-zone {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .demo-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #f50057;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea, #f50057);
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.02);
+        }
+        .messages-list {
+            margin-top: 20px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .msg-card {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+        .msg-author {
+            font-size: 11px;
+            color: #f50057;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation">
+        <div class="logo">🔒</div>
+        <div class="title">SecretMsg</div>
+        <div class="subtitle">Messages anonymes... mais pas pour vous !</div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">📨</div>
+                <div class="feature-text">Envoi anonyme</div>
+                <div class="feature-desc">Vos amis écrivent</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">👀</div>
+                <div class="feature-text">Messages publics</div>
+                <div class="feature-desc">Tout le monde lit</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔑</div>
+                <div class="feature-text">Mode Admin</div>
+                <div class="feature-desc">Vous voyez TOUT</div>
+            </div>
+        </div>
+
+        <div class="highlight">
+            <p>👤 Vous découvrez qui se cache derrière chaque message !</p>
+        </div>
+
+        <div class="vs">
+            <span class="ngl">NGL : vraiment anonyme ❌</span>
+            <span>VS</span>
+            <span class="secretmsg">SecretMsg : vous savez tout ✅</span>
+        </div>
+
+        <!-- ZONE DE SIMULATION INTERACTIVE -->
+        <div class="demo-zone">
+            <h3 class="demo-title">⚡ Testez le formulaire (Démo)</h3>
+            <form id="msgForm">
+                <input type="text" id="pseudoInput" placeholder="Votre nom (caché au public...)" required>
+                <textarea id="textInput" rows="3" placeholder="Écrivez votre message anonyme ici..." required></textarea>
+                <button type="submit">Envoyer le message</button>
+            </form>
+
+            <div class="messages-list" id="messagesContainer">
+                <!-- Les messages s'afficheront ici -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('msgForm');
+        const container = document.getElementById('messagesContainer');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Empêche le rechargement de la page
+
+            // Récupération des données
+            const pseudo = document.getElementById('pseudoInput').value;
+            const message = document.getElementById('textInput').value;
+
+            // Création de l'élément HTML pour le message
+            const card = document.createElement('div');
+            card.className = 'msg-card';
+            card.innerHTML = `
+                <p>" ${message} "</p>
+                <span class="msg-author">🔑 Mode Admin : Envoyé par ${pseudo}</span>
+            `;
+
+            // Ajout au début de la liste
+            container.insertBefore(card, container.firstChild);
+
+            // Réinitialisation du formulaire
+            form.reset();
+        });
+    </script>
+</body>
+</html>
