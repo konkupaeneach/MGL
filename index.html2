@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecretMsg - Messages Anonymes</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 { font-size: 2em; font-weight: 800; }
+        .tabs { display: flex; background: rgba(0,0,0,0.3); }
+        .tab {
+            flex: 1; padding: 15px; cursor: pointer; background: none; border: none;
+            font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.6);
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active { color: #667eea; border-bottom: 3px solid #667eea; }
+        .tab-content { display: none; padding: 25px; }
+        .tab-content.active { display: block; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%; padding: 12px; background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+            font-size: 16px; color: white;
+        }
+        .input-group select option { background: #1a1a2e; color: white; }
+        .input-group textarea { height: 100px; resize: vertical; }
+        .btn {
+            width: 100%; padding: 14px; color: white; border: none;
+            border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-bottom: 8px;
+        }
+        .btn-small { width: auto; padding: 8px 16px; font-size: 13px; display: inline-block; }
+        .btn-danger { background: linear-gradient(135deg, #f56565 0%, #ed64a6 100%); }
+        .message-list { max-height: 350px; overflow-y: auto; }
+        .message-item {
+            background: rgba(255,255,255,0.08); padding: 15px; border-radius: 10px;
+            margin-bottom: 10px; border-left: 4px solid #667eea;
+        }
+        .message-item.admin-view { border-left-color: #f56565; }
+        .message-meta {
+            display: flex; justify-content: space-between; margin-top: 10px;
+            font-size: 0.8em; color: rgba(255,255,255,0.5);
+        }
+        .sender-info {
+            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;
+            margin-top: 10px; font-size: 0.85em;
+        }
+        .sender-info p { margin: 3px 0; }
+        .badge { padding: 3px 8px; border-radius: 15px; font-size: 0.7em; font-weight: 600; }
+        .badge-admin { background: #f56565; }
+        .badge-anonymous { background: #667eea; }
+        .empty-state { text-align: center; padding: 40px; color: rgba(255,255,255,0.5); }
+        .notification {
+            position: fixed; top: 15px; right: 15px; padding: 12px 20px;
+            border-radius: 8px; color: white; font-weight: 600; z-index: 1000;
+        }
+        .notification.success { background: #00c853; }
+        .notification.error { background: #f56565; }
+        .hidden { display: none !important; }
+        .link-box {
+            background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px;
+            text-align: center; margin: 15px 0; border: 2px dashed #667eea;
+        }
+        .link-box .url {
+            font-size: 14px; word-break: break-all; color: #667eea;
+            background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px;
+            display: block; margin: 10px 0;
+        }
+        .link-box button {
+            background: #667eea; color: white; border: none; padding: 8px 16px;
+            border-radius: 6px; cursor: pointer; font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>🔒 SecretMsg</h1>
+            <p style="opacity:0.8;">Messages anonymes - Admin voit tout</p>
+        </div>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('home')">🏠 Lien</button>
+            <button class="tab" onclick="switchTab('send')">📨 Envoyer</button>
+            <button class="tab" onclick="switchTab('view')">👀 Messages</button>
+            <button class="tab" onclick="switchTab('admin')">🔑 Admin</button>
+        </div>
+
+        <div id="tab-home" class="tab-content active">
+            <h3 style="text-align:center; margin-bottom:15px;">Créez votre lien</h3>
+            <div class="input-group">
+                <label>Votre nom</label>
+                <input type="text" id="userName" placeholder="Ex: Jean">
+            </div>
+            <button class="btn" onclick="createUserLink()">🔗 Générer mon lien</button>
+            <div id="userLinkBox" class="link-box hidden">
+                <p>✅ Votre lien :</p>
+                <span class="url" id="userUrl"></span>
+                <button onclick="copyLink()">📋 Copier</button>
+                <p style="margin-top:8px; font-size:0.8em; opacity:0.6;">Partagez ce lien pour recevoir des messages !</p>
+            </div>
+        </div>
+
+        <div id="tab-send" class="tab-content">
+            <h3 style="margin-bottom:15px;">📨 Envoyer un message</h3>
+            <div class="input-group">
+                <label>Destinataire</label>
+                <select id="targetUser"><option value="">-- Choisir --</option></select>
+            </div>
+            <div class="input-group">
+                <label>Votre nom</label>
+                <input type="text" id="senderName" placeholder="Anonyme">
+            </div>
+            <div class="input-group">
+                <label>Votre email</label>
+                <input type="email" id="senderEmail" placeholder="jean@email.com">
+            </div>
+            <div class="input-group">
+                <label>Message</label>
+                <textarea id="messageContent" placeholder="Votre message..."></textarea>
+            </div>
+            <button class="btn" onclick="sendMessage()">📨 Envoyer</button>
+        </div>
+
+        <div id="tab-view" class="tab-content">
+            <h3 style="margin-bottom:15px;">💬 Messages reçus</h3>
+            <div class="input-group">
+                <label>Voir messages de :</label>
+                <select id="viewUser" onchange="displayPublicMessages()">
+                    <option value="">-- Choisir --</option>
+                </select>
+            </div>
+            <div id="publicMessages" class="message-list">
+                <div class="empty-state"><p>📭 Sélectionnez quelqu'un</p></div>
+            </div>
+        </div>
+
+        <div id="tab-admin" class="tab-content">
+            <div id="adminLoginForm">
+                <h3 style="color:#ffc107; margin-bottom:15px;">🔐 Admin</h3>
+                <div class="input-group">
+                    <label>Mot de passe</label>
+                    <input type="password" id="adminPassword" placeholder="Mot de passe">
+                </div>
+                <button class="btn" onclick="loginAsAdmin()">Se connecter</button>
+            </div>
+            <div id="adminContent" class="hidden">
+                <button class="btn btn-small btn-danger" onclick="logoutAdmin()" style="margin-bottom:15px;">🚪 Déconnexion</button>
+                <button class="btn btn-small btn-danger" onclick="clearAllMessages()" style="margin-bottom:15px;">🗑️ Tout effacer</button>
+                <h3>🔍 Messages avec expéditeurs</h3>
+                <div id="adminMessages" class="message-list">
+                    <div class="empty-state"><p>Connectez-vous</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Stockage local avec plusieurs utilisateurs
+        const DB_KEY = 'secretmsg_data';
+        const ADMIN_PASS = 'admin123';
+
+        function getData() {
+            const data = localStorage.getItem(DB_KEY);
+            return data ? JSON.parse(data) : { users: [], messages: [] };
+        }
+
+        function saveData(data) {
+            localStorage.setItem(DB_KEY, JSON.stringify(data));
+        }
+
+        function loadUserList() {
+            const data = getData();
+            const opts = data.users.map(u => `<option value="${u.id}">${escapeHtml(u.username)}</option>`).join('');
+            document.getElementById('targetUser').innerHTML = '<option value="">-- Choisir --</option>' + opts;
+            document.getElementById('viewUser').innerHTML = '<option value="">-- Choisir --</option>' + opts;
+            
+            const params = new URLSearchParams(window.location.search);
+            const uid = params.get('user');
+            if (uid) document.getElementById('targetUser').value = uid;
+        }
+
+        function createUserLink() {
+            const name = document.getElementById('userName').value.trim();
+            if (!name) { showNotif('❌ Entrez un nom', 'error'); return; }
+            
+            const data = getData();
+            const id = 'u_' + Date.now().toString(36) + Math.random().toString(36).substr(2,5);
+            data.users.push({ id, username: name, createdAt: new Date().toISOString() });
+            saveData(data);
+            
+            const url = window.location.origin + window.location.pathname + '?user=' + id;
+            document.getElementById('userUrl').textContent = url;
+            document.getElementById('userLinkBox').classList.remove('hidden');
+            loadUserList();
+            showNotif('✅ Lien créé !', 'success');
+        }
+
+        function copyLink() {
+            const url = document.getElementById('userUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => showNotif('📋 Copié !', 'success'));
+        }
+
+        function sendMessage() {
+            const target = document.getElementById('targetUser').value;
+            const name = document.getElementById('senderName').value.trim();
+            const email = document.getElementById('senderEmail').value.trim();
+            const content = document.getElementById('messageContent').value.trim();
+
+            if (!target) { showNotif('❌ Choisissez un destinataire', 'error'); return; }
+            if (!name) { showNotif('❌ Entrez votre nom', 'error'); return; }
+            if (!content) { showNotif('❌ Écrivez un message', 'error'); return; }
+
+            const data = getData();
+            data.messages.push({
+                id: Date.now(),
+                targetUserId: target,
+                senderName: name,
+                senderEmail: email,
+                content: content,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            });
+            saveData(data);
+
+            showNotif('✅ Message envoyé !', 'success');
+            document.getElementById('senderName').value = '';
+            document.getElementById('senderEmail').value = '';
+            document.getElementById('messageContent').value = '';
+            displayPublicMessages();
+        }
+
+        function displayPublicMessages() {
+            const target = document.getElementById('viewUser').value;
+            const container = document.getElementById('publicMessages');
+            
+            if (!target) {
+                container.innerHTML = '<div class="empty-state"><p>📭 Sélectionnez quelqu\'un</p></div>';
+                return;
+            }
+
+            const data = getData();
+            const msgs = data.messages.filter(m => m.targetUserId === target);
+            
+            if (msgs.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>📭 Aucun message</p></div>';
+                return;
+            }
+
+            msgs.sort((a,b) => b.id - a.id);
+            
+            container.innerHTML = msgs.map(m => `
+                <div class="message-item">
+                    <p>${escapeHtml(m.content)}</p>
+                    <div class="message-meta">
+                        <span>📅 ${new Date(m.timestamp).toLocaleString('fr-FR')}</span>
+                        <span class="badge badge-anonymous">Anonyme</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function isAdmin() { return sessionStorage.getItem('admin') === 'true'; }
+
+        function loginAsAdmin() {
+            if (document.getElementById('adminPassword').value === ADMIN_PASS) {
+                sessionStorage.setItem('admin', 'true');
+                document.getElementById('adminLoginForm').classList.add('hidden');
+                document.getElementById('adminContent').classList.remove('hidden');
+                showNotif('✅ Connecté admin', 'success');
+                displayAdminMessages();
+            } else {
+                showNotif('❌ Mot de passe incorrect', 'error');
+            }
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('admin');
+            document.getElementById('adminLoginForm').classList.remove('hidden');
+            document.getElementById('adminContent').classList.add('hidden');
+            showNotif('👋 Déconnecté', 'success');
+        }
+
+        function displayAdminMessages() {
+            if (!isAdmin()) return;
+            const data = getData();
+            const container = document.getElementById('adminMessages');
+            
+            if (data.messages.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>📭 Aucun message</p></div>';
+                return;
+            }
+
+            data.messages.sort((a,b) => b.id - a.id);
+            
+            container.innerHTML = data.messages.map((m, i) => {
+                const target = data.users.find(u => u.id === m.targetUserId);
+                return `
+                    <div class="message-item admin-view">
+                        <p><strong>Message :</strong> ${escapeHtml(m.content)}</p>
+                        <div class="sender-info">
+                            <p>👤 <strong>Expéditeur :</strong> ${escapeHtml(m.senderName)}</p>
+                            <p>📧 <strong>Email :</strong> ${escapeHtml(m.senderEmail || 'Non fourni')}</p>
+                            <p>🎯 <strong>Pour :</strong> ${target ? escapeHtml(target.username) : 'Inconnu'}</p>
+                            <p>📅 <strong>Date :</strong> ${new Date(m.timestamp).toLocaleString('fr-FR')}</p>
+                        </div>
+                        <div class="message-meta">
+                            <span>#${i+1}</span>
+                            <span class="badge badge-admin">Admin</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function clearAllMessages() {
+            if (!confirm('Supprimer TOUS les messages ?')) return;
+            const data = getData();
+            data.messages = [];
+            saveData(data);
+            showNotif('✅ Tous supprimés', 'success');
+            displayAdminMessages();
+            displayPublicMessages();
+        }
+
+        function switchTab(name) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            event.target.classList.add('active');
+            if (name === 'view') displayPublicMessages();
+            if (name === 'admin' && isAdmin()) displayAdminMessages();
+            if (name === 'send' || name === 'home') loadUserList();
+        }
+
+        function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+        function showNotif(msg, type) {
+            const n = document.createElement('div');
+            n.className = 'notification ' + type;
+            n.textContent = msg;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 3000);
+        }
+
+        function checkUrl() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('user')) switchTab('send');
+        }
+
+        if (isAdmin()) {
+            document.getElementById('adminLoginForm').classList.add('hidden');
+            document.getElementById('adminContent').classList.remove('hidden');
+        }
+
+        loadUserList();
+        checkUrl();
+    </script>
+</body>
+</html>
