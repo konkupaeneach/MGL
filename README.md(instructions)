@@ -1,0 +1,13 @@
+# SecretMsg Pro - Installation Guide
+
+## Prérequis
+- Node.js 16+
+- MySQL 8.0+
+- npm ou yarn
+
+## Installation
+
+1. **Cloner le projet**
+```bash
+git clone [votre-repo]
+cd secretmsg
