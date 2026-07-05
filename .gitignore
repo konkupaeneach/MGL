@@ -1,24 +1,35 @@
-# Compiled class file
-*.class
+# Fichiers secrets et mots de passe
+.env
+*.env
+.env.*
+*secret*
+*password*
+*key*
+config.json
 
-# Log file
+# Fichiers temporaires
+*.tmp
+*.temp
 *.log
+*.cache
 
-# BlueJ files
-*.ctxt
+# Dossiers de dépendances
+node_modules/
+vendor/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
+# Éditeur de code
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Fichiers volumineux
 *.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+*.tar
+*.gz
