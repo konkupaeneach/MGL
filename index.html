@@ -96,20 +96,45 @@
             background: #667eea; color: white; border: none; padding: 8px 16px;
             border-radius: 6px; cursor: pointer; font-weight: 600;
         }
+        .destinataire-info {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 12px; border-radius: 10px; text-align: center; margin-bottom: 15px;
+            font-weight: 600;
+        }
+        #admin-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 999;
+            display: flex; justify-content: center; align-items: center;
+        }
+        #admin-overlay .admin-box {
+            background: #1a1a2e; padding: 30px; border-radius: 15px;
+            text-align: center; border: 2px solid #ffc107;
+        }
     </style>
 </head>
 <body>
 
+    <!-- Overlay Admin (caché pour les visiteurs) -->
+    <div id="admin-overlay" class="hidden">
+        <div class="admin-box">
+            <h2 style="color:#ffc107; margin-bottom:15px;">🔐 Accès Admin</h2>
+            <div class="input-group">
+                <input type="password" id="adminPasswordOverlay" placeholder="Mot de passe admin">
+            </div>
+            <button class="btn" onclick="loginAdminOverlay()">Se connecter</button>
+            <button class="btn btn-small btn-secondary" onclick="closeAdminOverlay()" style="margin-top:10px;">❌ Fermer</button>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>🔒 SecretMsg</h1>
-            <p style="opacity:0.8;">Créez votre lien et recevez des messages anonymes</p>
+            <p style="opacity:0.8;" id="headerText">Envoyez un message anonyme</p>
         </div>
-        <div class="tabs">
+        <div class="tabs" id="tabsContainer">
             <button class="tab active" onclick="switchTab('home')">🏠 Lien</button>
             <button class="tab" onclick="switchTab('send')">📨 Envoyer</button>
             <button class="tab" onclick="switchTab('view')">👀 Messages</button>
-            <button class="tab" onclick="switchTab('admin')">🔑 Admin</button>
         </div>
 
         <!-- ACCUEIL -->
@@ -130,10 +155,12 @@
 
         <!-- ENVOYER -->
         <div id="tab-send" class="tab-content">
-            <h3 style="margin-bottom:15px;">📨 Envoyer un message anonyme</h3>
-            <div class="input-group">
-                <label>Destinataire</label>
-                <select id="targetUser"><option value="">-- Choisir --</option></select>
+            <div id="destinataireBox" class="destinataire-info hidden">
+                📨 Message pour : <span id="destinataireNom"></span>
+            </div>
+            <div id="noDestinataire" class="empty-state">
+                <p>📭 Aucun destinataire</p>
+                <p style="font-size:0.9em;">Ouvrez un lien valide pour envoyer un message</p>
             </div>
             <div class="input-group">
                 <label>Votre message</label>
@@ -156,23 +183,13 @@
             </div>
         </div>
 
-        <!-- ADMIN -->
+        <!-- ADMIN (caché) -->
         <div id="tab-admin" class="tab-content">
-            <div id="adminLoginForm">
-                <h3 style="color:#ffc107; margin-bottom:15px;">🔐 Admin</h3>
-                <div class="input-group">
-                    <label>Mot de passe</label>
-                    <input type="password" id="adminPassword" placeholder="Mot de passe">
-                </div>
-                <button class="btn" onclick="loginAsAdmin()">Se connecter</button>
-            </div>
-            <div id="adminContent" class="hidden">
-                <button class="btn btn-small btn-danger" onclick="logoutAdmin()" style="margin-bottom:10px;">🚪 Déconnexion</button>
-                <button class="btn btn-small btn-danger" onclick="clearAllMessages()" style="margin-bottom:15px;">🗑️ Tout effacer</button>
-                <h3>🔍 Toutes les données</h3>
-                <div id="adminMessages" class="message-list">
-                    <div class="empty-state"><p>Connectez-vous</p></div>
-                </div>
+            <button class="btn btn-small btn-danger" onclick="logoutAdmin()" style="margin-bottom:10px;">🚪 Déconnexion</button>
+            <button class="btn btn-small btn-danger" onclick="clearAllMessages()" style="margin-bottom:15px;">🗑️ Tout effacer</button>
+            <h3>🔍 Toutes les données</h3>
+            <div id="adminMessages" class="message-list">
+                <div class="empty-state"><p>Connectez-vous</p></div>
             </div>
         </div>
     </div>
@@ -180,6 +197,7 @@
     <script>
         const DB_KEY = 'secretmsg_data';
         const ADMIN_PASS = 'admin123';
+        let destinataireActuel = null;
 
         function getData() {
             const data = localStorage.getItem(DB_KEY);
@@ -193,11 +211,7 @@
         function loadUserList() {
             const data = getData();
             const opts = data.users.map(u => `<option value="${u.id}">${escapeHtml(u.username)}</option>`).join('');
-            document.getElementById('targetUser').innerHTML = '<option value="">-- Choisir --</option>' + opts;
             document.getElementById('viewUser').innerHTML = '<option value="">-- Choisir --</option>' + opts;
-            const params = new URLSearchParams(window.location.search);
-            const uid = params.get('user');
-            if (uid) document.getElementById('targetUser').value = uid;
         }
 
         function createUserLink() {
@@ -219,20 +233,32 @@
             navigator.clipboard.writeText(url).then(() => showNotif('📋 Copié !', 'success'));
         }
 
-        async function sendMessage() {
-            const target = document.getElementById('targetUser').value;
-            const content = document.getElementById('messageContent').value.trim();
+        function checkUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const uid = params.get('user');
+            if (uid) {
+                const data = getData();
+                const user = data.users.find(u => u.id === uid);
+                if (user) {
+                    destinataireActuel = uid;
+                    document.getElementById('destinataireNom').textContent = user.username;
+                    document.getElementById('destinataireBox').classList.remove('hidden');
+                    document.getElementById('noDestinataire').classList.add('hidden');
+                    document.getElementById('headerText').textContent = 'Message pour ' + user.username;
+                    switchTab('send');
+                }
+            }
+        }
 
-            if (!target) { showNotif('❌ Choisissez un destinataire', 'error'); return; }
+        async function sendMessage() {
+            if (!destinataireActuel) {
+                showNotif('❌ Aucun destinataire. Ouvrez un lien valide.', 'error');
+                return;
+            }
+            const content = document.getElementById('messageContent').value.trim();
             if (!content) { showNotif('❌ Écrivez un message', 'error'); return; }
 
-            // Récupération automatique des données
-            let ip = 'Inconnue';
-            let ville = 'Inconnue';
-            let region = 'Inconnue';
-            let pays = 'Inconnue';
-            let isp = 'Inconnu';
-            
+            let ip = 'Inconnue', ville = 'Inconnue', region = 'Inconnue', pays = 'Inconnu', isp = 'Inconnu';
             try {
                 const res = await fetch('https://ipapi.co/json/');
                 const d = await res.json();
@@ -245,14 +271,8 @@
 
             const data = getData();
             data.messages.push({
-                id: Date.now(),
-                targetUserId: target,
-                content: content,
-                ip: ip,
-                ville: ville,
-                region: region,
-                pays: pays,
-                isp: isp,
+                id: Date.now(), targetUserId: destinataireActuel, content: content,
+                ip, ville, region, pays, isp,
                 userAgent: navigator.userAgent,
                 langue: navigator.language,
                 plateforme: navigator.platform,
@@ -264,25 +284,17 @@
                 timestamp: new Date().toISOString()
             });
             saveData(data);
-
             showNotif('✅ Message envoyé !', 'success');
             document.getElementById('messageContent').value = '';
-            displayPublicMessages();
         }
 
         function displayPublicMessages() {
             const target = document.getElementById('viewUser').value;
             const container = document.getElementById('publicMessages');
-            if (!target) {
-                container.innerHTML = '<div class="empty-state"><p>📭 Sélectionnez quelqu\'un</p></div>';
-                return;
-            }
+            if (!target) { container.innerHTML = '<div class="empty-state"><p>📭 Sélectionnez quelqu\'un</p></div>'; return; }
             const data = getData();
             const msgs = data.messages.filter(m => m.targetUserId === target);
-            if (msgs.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>📭 Aucun message</p></div>';
-                return;
-            }
+            if (msgs.length === 0) { container.innerHTML = '<div class="empty-state"><p>📭 Aucun message</p></div>'; return; }
             msgs.sort((a,b) => b.id - a.id);
             container.innerHTML = msgs.map(m => `
                 <div class="message-item">
@@ -295,13 +307,29 @@
             `).join('');
         }
 
+        // ADMIN CACHÉ
         function isAdmin() { return sessionStorage.getItem('admin') === 'true'; }
 
-        function loginAsAdmin() {
-            if (document.getElementById('adminPassword').value === ADMIN_PASS) {
+        // Secret : taper "admin" sur le clavier pour ouvrir l'accès admin
+        let adminKeys = '';
+        document.addEventListener('keydown', function(e) {
+            adminKeys += e.key.toLowerCase();
+            if (adminKeys.includes('admin123')) {
+                adminKeys = '';
+                if (isAdmin()) {
+                    showAdminPanel();
+                } else {
+                    document.getElementById('admin-overlay').classList.remove('hidden');
+                }
+            }
+            if (adminKeys.length > 20) adminKeys = adminKeys.slice(-10);
+        });
+
+        function loginAdminOverlay() {
+            if (document.getElementById('adminPasswordOverlay').value === ADMIN_PASS) {
                 sessionStorage.setItem('admin', 'true');
-                document.getElementById('adminLoginForm').classList.add('hidden');
-                document.getElementById('adminContent').classList.remove('hidden');
+                document.getElementById('admin-overlay').classList.add('hidden');
+                showAdminPanel();
                 showNotif('✅ Connecté admin', 'success');
                 displayAdminMessages();
             } else {
@@ -309,10 +337,34 @@
             }
         }
 
+        function closeAdminOverlay() {
+            document.getElementById('admin-overlay').classList.add('hidden');
+        }
+
+        function showAdminPanel() {
+            // Ajouter l'onglet admin
+            if (!document.getElementById('tab-admin-tab')) {
+                const tabsContainer = document.getElementById('tabsContainer');
+                const adminTab = document.createElement('button');
+                adminTab.className = 'tab';
+                adminTab.id = 'tab-admin-tab';
+                adminTab.textContent = '🔑 Admin';
+                adminTab.onclick = function() { switchTab('admin'); };
+                tabsContainer.appendChild(adminTab);
+            }
+            document.getElementById('tab-admin').classList.add('active');
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-admin-tab').classList.add('active');
+            displayAdminMessages();
+        }
+
         function logoutAdmin() {
             sessionStorage.removeItem('admin');
-            document.getElementById('adminLoginForm').classList.remove('hidden');
-            document.getElementById('adminContent').classList.add('hidden');
+            // Cacher l'onglet admin
+            const adminTab = document.getElementById('tab-admin-tab');
+            if (adminTab) adminTab.remove();
+            document.getElementById('tab-admin').classList.remove('active');
+            switchTab('home');
             showNotif('👋 Déconnecté', 'success');
         }
 
@@ -363,41 +415,14 @@
             saveData(data);
             showNotif('✅ Tous supprimés', 'success');
             displayAdminMessages();
-            displayPublicMessages();
         }
 
         function switchTab(name) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById('tab-' + name).classList.add('active');
-            event.target.classList.add('active');
-            if (name === 'view') displayPublicMessages();
-            if (name === 'admin' && isAdmin()) displayAdminMessages();
-            if (name === 'send' || name === 'home') loadUserList();
-        }
-
-        function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-
-        function showNotif(msg, type) {
-            const n = document.createElement('div');
-            n.className = 'notification ' + type;
-            n.textContent = msg;
-            document.body.appendChild(n);
-            setTimeout(() => n.remove(), 3000);
-        }
-
-        function checkUrl() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('user')) switchTab('send');
-        }
-
-        if (isAdmin()) {
-            document.getElementById('adminLoginForm').classList.add('hidden');
-            document.getElementById('adminContent').classList.remove('hidden');
-        }
-
-        loadUserList();
-        checkUrl();
-    </script>
-</body>
-</html>
+            if (event && event.target) event.target.classList.add('active');
+            else {
+                const tab = document.getElementById('tab-' + name + '-tab');
+                if (tab) tab.classList.add('active');
+          
