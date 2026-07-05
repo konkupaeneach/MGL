@@ -3,558 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecretMsg Pro - Messages Anonymes Sécurisés</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>SecretMsg - Messages Anonymes</title>
     <style>
-        /* Styles modernes et responsive */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #6c63ff;
-            --secondary: #f50057;
-            --success: #00c853;
-            --warning: #ff9100;
-            --dark: #1a1a2e;
-            --light: #f8f9fa;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
             color: white;
         }
-
-        .app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            padding: 40px 20px;
-            background: rgba(255, 255, 255, 0.05);
+        .container {
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 3em;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 30px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-title {
-            font-size: 1.5em;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .input-field {
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
             width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            transition: all 0.3s;
+            max-width: 600px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
         }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .input-field::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        textarea.input-field {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), #8b7fff);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--secondary), #ff4081);
-            color: white;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #69f0ae);
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .message-bubble {
-            background: rgba(255, 255, 255, 0.08);
-            border-left: 4px solid var(--primary);
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .admin-badge {
-            background: var(--secondary);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            margin-left: 10px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
             text-align: center;
         }
-
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: 800;
-            color: var(--primary);
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; font-weight: 800; }
+        .header p { opacity: 0.9; font-size: 1.1em; }
+        .tabs { display: flex; background: rgba(0,0,0,0.3); }
+        .tab {
+            flex: 1; padding: 18px; text-align: center; cursor: pointer;
+            background: none; border: none; font-size: 16px; font-weight: 600;
+            color: rgba(255,255,255,0.6); transition: all 0.3s;
+            border-bottom: 3px solid transparent;
         }
-
-        .stat-label {
-            font-size: 0.9em;
-            color: rgba(255, 255, 255, 0.7);
-            margin-top: 5px;
+        .tab:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab.active { color: #667eea; border-bottom: 3px solid #667eea; background: rgba(255,255,255,0.1); }
+        .tab-content { display: none; padding: 30px; }
+        .tab-content.active { display: block; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: rgba(255,255,255,0.9); }
+        .input-group input, .input-group textarea {
+            width: 100%; padding: 15px; background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
+            font-size: 16px; color: white; transition: all 0.3s;
         }
-
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none; border-color: #667eea; background: rgba(255,255,255,0.15);
+        }
+        .input-group input::placeholder, .input-group textarea::placeholder { color: rgba(255,255,255,0.5); }
+        .input-group textarea { height: 120px; resize: vertical; }
+        .btn {
+            width: 100%; padding: 16px; color: white; border: none;
+            border-radius: 10px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s; margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4); }
+        .btn-small { width: auto; padding: 10px 20px; font-size: 14px; }
+        .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); }
+        .btn-danger { background: linear-gradient(135deg, #f56565 0%, #ed64a6 100%); }
+        .btn-success { background: linear-gradient(135deg, #00c853 0%, #69f0ae 100%); }
+        .message-list { max-height: 500px; overflow-y: auto; padding-right: 10px; }
+        .message-item {
+            background: rgba(255,255,255,0.08); padding: 20px; border-radius: 12px;
+            margin-bottom: 15px; border-left: 4px solid #667eea;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .message-item.admin-view { border-left-color: #f56565; }
+        .message-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 12px; font-size: 0.85em; color: rgba(255,255,255,0.6);
+        }
+        .sender-info {
+            background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;
+            margin-top: 12px; font-size: 0.9em;
+        }
+        .sender-info p { margin: 5px 0; color: rgba(255,255,255,0.8); }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 600; }
+        .badge-admin { background: #f56565; color: white; }
+        .badge-anonymous { background: #667eea; color: white; }
+        .empty-state { text-align: center; padding: 50px 20px; color: rgba(255,255,255,0.5); }
         .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 20px;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            z-index: 1000;
-            animation: slideInRight 0.3s ease;
+            position: fixed; top: 20px; right: 20px; padding: 16px 24px;
+            border-radius: 10px; color: white; font-weight: 600; z-index: 1000;
+            animation: slideInRight 0.3s ease; backdrop-filter: blur(10px);
         }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .notification.success { background: rgba(0, 200, 83, 0.9); }
+        .notification.error { background: rgba(245, 101, 101, 0.9); }
+        .admin-login {
+            margin-bottom: 30px; padding: 25px; background: rgba(0,0,0,0.3);
+            border-radius: 12px; border: 1px solid rgba(255,193,7,0.3);
         }
-
-        .notification.success {
-            background: var(--success);
+        .admin-login h3 { color: #ffc107; margin-bottom: 15px; }
+        .hidden { display: none !important; }
+        .link-box {
+            background: rgba(0,0,0,0.4); padding: 20px; border-radius: 12px;
+            text-align: center; margin-bottom: 20px; border: 2px dashed #667eea;
         }
-
-        .notification.error {
-            background: var(--secondary);
+        .link-box .url {
+            font-size: 18px; word-break: break-all; color: #667eea;
+            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;
+            margin: 10px 0; display: block;
         }
-
-        .hidden {
-            display: none;
+        .link-box .copy-btn {
+            background: #667eea; color: white; border: none; padding: 10px 20px;
+            border-radius: 8px; cursor: pointer; font-weight: 600;
         }
-
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
+        .user-select { margin-bottom: 20px; }
+        .user-select select {
+            width: 100%; padding: 15px; background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
+            font-size: 16px; color: white;
+        }
+        .user-select select option { background: #1a1a2e; color: white; }
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.8em; }
+            .tab { font-size: 14px; padding: 12px; }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="header">
-            <h1>🔒 SecretMsg Pro</h1>
-            <p>Messages anonymes avec analytics avancés</p>
-        </header>
 
-        <div class="stats-grid" id="statsContainer" style="display: none;">
-            <div class="stat-card">
-                <div class="stat-value" id="totalMessages">0</div>
-                <div class="stat-label">Messages totaux</div>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 SecretMsg</h1>
+            <p>Créez votre lien et recevez des messages anonymes</p>
+        </div>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('home')">🏠 Accueil</button>
+            <button class="tab" onclick="switchTab('send')">📨 Envoyer</button>
+            <button class="tab" onclick="switchTab('view')">👀 Messages</button>
+            <button class="tab" onclick="switchTab('admin')">🔑 Admin</button>
+        </div>
+
+        <!-- ACCUEIL - Créer son lien -->
+        <div id="tab-home" class="tab-content active">
+            <h3 style="margin-bottom: 20px; text-align: center;">✨ Créez votre lien de réception</h3>
+            
+            <div class="input-group">
+                <label>Votre nom ou pseudo</label>
+                <input type="text" id="userName" placeholder="Ex: Jean D.">
             </div>
-            <div class="stat-card">
-                <div class="stat-value" id="totalUsers">0</div>
-                <div class="stat-label">Utilisateurs</div>
+            
+            <button class="btn" onclick="createUserLink()">🔗 Générer mon lien</button>
+            
+            <div id="userLinkBox" class="link-box hidden">
+                <p style="margin-bottom: 10px;">✅ Votre lien personnel :</p>
+                <span class="url" id="userUrl"></span>
+                <button class="copy-btn" onclick="copyLink()">📋 Copier le lien</button>
+                <p style="margin-top: 10px; font-size: 0.9em; color: rgba(255,255,255,0.6);">
+                    Partagez ce lien pour recevoir des messages anonymes !
+                </p>
             </div>
-            <div class="stat-card">
-                <div class="stat-value" id="messagesToday">0</div>
-                <div class="stat-label">Aujourd'hui</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="blockedUsers">0</div>
-                <div class="stat-label">Bloqués</div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <p style="color: rgba(255,255,255,0.6);">Vous avez déjà un lien ?</p>
+                <button class="btn btn-secondary btn-small" onclick="switchTab('send')">📨 Envoyer un message à quelqu'un</button>
             </div>
         </div>
 
-        <div class="dashboard">
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-paper-plane"></i>
-                    Envoyer un message
-                </div>
-                <input type="text" class="input-field" id="senderName" placeholder="Votre nom (visible par l'admin)">
-                <input type="email" class="input-field" id="senderEmail" placeholder="Votre email (optionnel)">
-                <textarea class="input-field" id="messageContent" placeholder="Votre message anonyme..."></textarea>
-                <button class="btn btn-primary" onclick="sendMessage()">
-                    <i class="fas fa-lock"></i> Envoyer anonymement
-                </button>
+        <!-- ENVOYER un message -->
+        <div id="tab-send" class="tab-content">
+            <h3 style="margin-bottom: 20px;">📨 Envoyer un message anonyme</h3>
+            
+            <div class="user-select">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Destinataire</label>
+                <select id="targetUser">
+                    <option value="">-- Choisir un destinataire --</option>
+                </select>
             </div>
 
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-comments"></i>
-                    Messages publics
-                </div>
-                <div id="publicMessages">
-                    <p style="text-align: center; color: rgba(255,255,255,0.5);">
-                        <i class="fas fa-inbox"></i> Aucun message
-                    </p>
+            <div class="input-group">
+                <label>Votre nom (invisible pour le destinataire)</label>
+                <input type="text" id="senderName" placeholder="Ex: Anonyme">
+            </div>
+            <div class="input-group">
+                <label>Votre email ou identifiant</label>
+                <input type="email" id="senderEmail" placeholder="Ex: jean@email.com">
+            </div>
+            <div class="input-group">
+                <label>Votre message</label>
+                <textarea id="messageContent" placeholder="Écrivez votre message..."></textarea>
+            </div>
+            <button class="btn" onclick="sendMessage()">📨 Envoyer anonymement</button>
+        </div>
+
+        <!-- VOIR les messages -->
+        <div id="tab-view" class="tab-content">
+            <h3 style="margin-bottom: 20px;">💬 Messages reçus</h3>
+            
+            <div class="user-select">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Voir les messages de :</label>
+                <select id="viewUser" onchange="displayPublicMessages()">
+                    <option value="">-- Choisir --</option>
+                </select>
+            </div>
+
+            <div id="publicMessages" class="message-list">
+                <div class="empty-state">
+                    <div>📭</div>
+                    <p>Sélectionnez un destinataire pour voir ses messages</p>
                 </div>
             </div>
         </div>
 
-        <div class="card hidden" id="adminPanel">
-            <div class="card-title">
-                <i class="fas fa-shield-alt"></i>
-                Panneau d'administration
-                <span class="admin-badge">ADMIN</span>
-            </div>
-            <div id="adminLogin">
-                <input type="email" class="input-field" id="adminEmail" placeholder="Email admin">
-                <input type="password" class="input-field" id="adminPassword" placeholder="Mot de passe">
-                <button class="btn btn-success" onclick="adminLogin()">
-                    <i class="fas fa-sign-in-alt"></i> Connexion admin
-                </button>
+        <!-- ADMIN -->
+        <div id="tab-admin" class="tab-content">
+            <div id="adminLoginForm" class="admin-login">
+                <h3>🔐 Connexion administrateur</h3>
+                <div class="input-group">
+                    <label>Mot de passe admin</label>
+                    <input type="password" id="adminPassword" placeholder="Entrez le mot de passe">
+                </div>
+                <button class="btn" onclick="loginAsAdmin()">Se connecter</button>
             </div>
             <div id="adminContent" class="hidden">
-                <div style="margin-bottom: 20px;">
-                    <button class="btn btn-danger" onclick="logoutAdmin()">
-                        <i class="fas fa-sign-out-alt"></i> Déconnexion
-                    </button>
-                    <button class="btn btn-danger" onclick="clearAllMessages()" style="margin-left: 10px;">
-                        <i class="fas fa-trash"></i> Vider tout
-                    </button>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn btn-secondary" onclick="logoutAdmin()">🚪 Déconnexion</button>
+                    <button class="btn btn-danger" onclick="clearAllMessages()">🗑️ Tout effacer</button>
                 </div>
-                <div id="adminMessages">
-                    <p style="text-align: center; color: rgba(255,255,255,0.5);">
-                        Chargement...
-                    </p>
+                <h3 style="margin-bottom: 20px;">🔍 Tous les messages avec expéditeurs</h3>
+                <div id="adminMessages" class="message-list">
+                    <div class="empty-state"><p>🔒 Connectez-vous pour voir les expéditeurs</p></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        // Configuration
-        const API_URL = window.location.origin + '/api';
-        let adminToken = localStorage.getItem('adminToken');
-        let currentUser = null;
+        const DB_NAME = 'SecretMsgDB';
+        const ADMIN_PASSWORD = 'admin123';
+        let db;
+        let currentUserId = null;
 
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', () => {
-            loadPublicMessages();
-            
-            if (adminToken) {
-                checkAdminAuth();
+        // Initialisation base de données
+        const request = indexedDB.open(DB_NAME, 2);
+        request.onerror = (e) => console.error('Erreur DB:', e);
+        request.onsuccess = (e) => {
+            db = e.target.result;
+            loadUserList();
+            checkUrlForUser();
+        };
+        request.onupgradeneeded = (e) => {
+            db = e.target.result;
+            if (!db.objectStoreNames.contains('users')) {
+                const usersStore = db.createObjectStore('users', { keyPath: 'id' });
+                usersStore.createIndex('username', 'username', { unique: false });
             }
-            
-            // Vérifier si on est sur la page admin
-            if (window.location.hash === '#admin') {
-                document.getElementById('adminPanel').classList.remove('hidden');
+            if (!db.objectStoreNames.contains('messages')) {
+                const messagesStore = db.createObjectStore('messages', { keyPath: 'id', autoIncrement: true });
+                messagesStore.createIndex('targetUserId', 'targetUserId', { unique: false });
+                messagesStore.createIndex('timestamp', 'timestamp', { unique: false });
             }
-        });
+        };
 
-        // Fonctions API
-        async function sendMessage() {
+        // Vérifier si un utilisateur est dans l'URL
+        function checkUrlForUser() {
+            const params = new URLSearchParams(window.location.search);
+            const userId = params.get('user');
+            if (userId) {
+                document.getElementById('targetUser').value = userId;
+                switchTab('send');
+            }
+        }
+
+        // Créer un lien utilisateur
+        function createUserLink() {
+            const name = document.getElementById('userName').value.trim();
+            if (!name) { showNotification('❌ Entrez votre nom', 'error'); return; }
+
+            const transaction = db.transaction(['users'], 'readwrite');
+            const store = transaction.objectStore('users');
+            
+            const userId = 'user_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            const user = { id: userId, username: name, createdAt: new Date().toISOString() };
+            
+            store.add(user);
+            
+            transaction.oncomplete = () => {
+                currentUserId = userId;
+                const url = window.location.origin + window.location.pathname + '?user=' + userId;
+                document.getElementById('userUrl').textContent = url;
+                document.getElementById('userLinkBox').classList.remove('hidden');
+                loadUserList();
+                showNotification('✅ Lien créé avec succès !', 'success');
+            };
+        }
+
+        // Copier le lien
+        function copyLink() {
+            const url = document.getElementById('userUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                showNotification('📋 Lien copié !', 'success');
+            }).catch(() => {
+                prompt('Copiez ce lien :', url);
+            });
+        }
+
+        // Charger la liste des utilisateurs
+        function loadUserList() {
+            if (!db) { setTimeout(loadUserList, 100); return; }
+            
+            const transaction = db.transaction(['users'], 'readonly');
+            const store = transaction.objectStore('users');
+            const req = store.getAll();
+            
+            req.onsuccess = () => {
+                const users = req.result;
+                const targetSelect = document.getElementById('targetUser');
+                const viewSelect = document.getElementById('viewUser');
+                
+                const options = users.map(u => `<option value="${u.id}">${escapeHtml(u.username)}</option>`).join('');
+                
+                targetSelect.innerHTML = '<option value="">-- Choisir un destinataire --</option>' + options;
+                viewSelect.innerHTML = '<option value="">-- Choisir --</option>' + options;
+                
+                // Si l'URL contient un user, le sélectionner
+                const params = new URLSearchParams(window.location.search);
+                const urlUser = params.get('user');
+                if (urlUser) {
+                    targetSelect.value = urlUser;
+                }
+            };
+        }
+
+        // Envoyer un message
+        function sendMessage() {
+            const targetUserId = document.getElementById('targetUser').value;
             const name = document.getElementById('senderName').value.trim();
             const email = document.getElementById('senderEmail').value.trim();
             const content = document.getElementById('messageContent').value.trim();
 
-            if (!name || !content) {
-                showNotification('Veuillez remplir le nom et le message', 'error');
-                return;
-            }
+            if (!targetUserId) { showNotification('❌ Choisissez un destinataire', 'error'); return; }
+            if (!name) { showNotification('❌ Entrez votre nom', 'error'); return; }
+            if (!content) { showNotification('❌ Écrivez un message', 'error'); return; }
 
-            try {
-                const response = await axios.post(`${API_URL}/messages/send`, {
-                    username: name,
-                    email: email,
-                    content: content
-                }, {
-                    headers: {
-                        'X-Fingerprint': generateFingerprint()
-                    }
-                });
-
-                showNotification('✅ Message envoyé avec succès!', 'success');
-                
-                // Réinitialiser le formulaire
+            const transaction = db.transaction(['messages'], 'readwrite');
+            const store = transaction.objectStore('messages');
+            
+            const message = {
+                targetUserId: targetUserId,
+                senderName: name,
+                senderEmail: email,
+                content: content,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent
+            };
+            
+            store.add(message);
+            
+            transaction.oncomplete = () => {
+                showNotification('✅ Message envoyé !', 'success');
                 document.getElementById('senderName').value = '';
                 document.getElementById('senderEmail').value = '';
                 document.getElementById('messageContent').value = '';
-                
-                // Recharger les messages
-                loadPublicMessages();
-                
-            } catch (error) {
-                const message = error.response?.data?.error || 'Erreur lors de l\'envoi';
-                showNotification(message, 'error');
-            }
+                displayPublicMessages();
+            };
         }
 
-        async function loadPublicMessages() {
-            try {
-                const response = await axios.get(`${API_URL}/messages/public`);
-                displayPublicMessages(response.data.messages);
-            } catch (error) {
-                console.error('Erreur chargement messages:', error);
+        // Afficher les messages publics
+        function displayPublicMessages() {
+            const targetUserId = document.getElementById('viewUser').value;
+            if (!targetUserId) {
+                document.getElementById('publicMessages').innerHTML = '<div class="empty-state"><div>📭</div><p>Sélectionnez un destinataire pour voir ses messages</p></div>';
+                return;
             }
-        }
+            if (!db) { setTimeout(displayPublicMessages, 100); return; }
 
-        function displayPublicMessages(messages) {
-            const container = document.getElementById('publicMessages');
+            const transaction = db.transaction(['messages'], 'readonly');
+            const store = transaction.objectStore('messages');
+            const req = store.getAll();
             
-            if (!messages || messages.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5);"><i class="fas fa-inbox"></i> Aucun message pour le moment</p>';
-                return;
-            }
-
-            container.innerHTML = messages.map(msg => `
-                <div class="message-bubble">
-                    <p>${escapeHtml(msg.content)}</p>
-                    <small style="color: rgba(255,255,255,0.5);">
-                        <i class="far fa-clock"></i> ${new Date(msg.created_at).toLocaleString('fr-FR')}
-                    </small>
-                </div>
-            `).join('');
-        }
-
-        async function adminLogin() {
-            const email = document.getElementById('adminEmail').value.trim();
-            const password = document.getElementById('adminPassword').value;
-
-            if (!email || !password) {
-                showNotification('Veuillez remplir tous les champs', 'error');
-                return;
-            }
-
-            try {
-                const response = await axios.post(`${API_URL}/admin/login`, {
-                    email: email,
-                    password: password
-                });
-
-                adminToken = response.data.token;
-                localStorage.setItem('adminToken', adminToken);
+            req.onsuccess = () => {
+                const messages = req.result.filter(m => m.targetUserId === targetUserId);
+                const container = document.getElementById('publicMessages');
                 
-                document.getElementById('adminLogin').classList.add('hidden');
-                document.getElementById('adminContent').classList.remove('hidden');
+                if (messages.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div>📭</div><p>Aucun message pour cette personne</p></div>';
+                    return;
+                }
                 
-                showNotification('✅ Connecté en tant qu\'admin', 'success');
+                messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 
-                loadAdminMessages();
-                loadAdminStats();
-            } catch (error) {
-                const message = error.response?.data?.error || 'Erreur de connexion';
-                showNotification(message, 'error');
-            }
-        }
-
-        async function checkAdminAuth() {
-            try {
-                const response = await axios.get(`${API_URL}/admin/messages`, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
-                
-                document.getElementById('adminLogin').classList.add('hidden');
-                document.getElementById('adminContent').classList.remove('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                
-                loadAdminMessages();
-                loadAdminStats();
-            } catch (error) {
-                adminToken = null;
-                localStorage.removeItem('adminToken');
-            }
-        }
-
-        async function loadAdminMessages() {
-            if (!adminToken) return;
-
-            try {
-                const response = await axios.get(`${API_URL}/admin/messages`, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
-
-                displayAdminMessages(response.data.messages);
-            } catch (error) {
-                console.error('Erreur chargement messages admin:', error);
-            }
-        }
-
-        function displayAdminMessages(messages) {
-            const container = document.getElementById('adminMessages');
-            
-            if (!messages || messages.length === 0) {
-                container.innerHTML = '<p style="text-align: center;">Aucun message</p>';
-                return;
-            }
-
-            container.innerHTML = messages.map(msg => `
-                <div class="message-bubble" style="border-left-color: var(--secondary);">
-                    <p><strong>Message:</strong> ${escapeHtml(msg.content)}</p>
-                    <div style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 8px;">
-                        <p><strong>👤 Expéditeur:</strong> ${escapeHtml(msg.sender_name)}</p>
-                        <p><strong>📧 Email:</strong> ${escapeHtml(msg.sender_email || 'Non fourni')}</p>
-                        <p><strong>🌐 IP:</strong> ${msg.ip_address}</p>
-                        <p><strong>📍 Localisation:</strong> ${msg.geo_location || 'Non disponible'}</p>
-                        <p><strong>🖥️ Navigateur:</strong> ${msg.browser_info}</p>
-                        <p><strong>📱 Appareil:</strong> ${msg.device_info}</p>
-                        <p><strong>🔑 Fingerprint:</strong> ${msg.fingerprint}</p>
-                        <p><strong>📅 Inscrit le:</strong> ${new Date(msg.sender_registered_at).toLocaleString('fr-FR')}</p>
-                        <p><strong>🕐 Dernière activité:</strong> ${new Date(msg.sender_last_active).toLocaleString('fr-FR')}</p>
-                        ${msg.sender_blocked ? '<span class="admin-badge">🚫 BLOQUÉ</span>' : ''}
+                container.innerHTML = messages.map(msg => `
+                    <div class="message-item">
+                        <p style="font-size: 1.1em; margin-bottom: 10px;">${escapeHtml(msg.content)}</p>
+                        <div class="message-meta">
+                            <span>📅 ${formatDate(msg.timestamp)}</span>
+                            <span class="badge badge-anonymous">Anonyme</span>
+                        </div>
                     </div>
-                    <div style="margin-top: 10px; display: flex; gap: 10px;">
-                        <button class="btn btn-danger" onclick="toggleBlockUser(${msg.user_id})" style="font-size: 0.8em; padding: 5px 15px;">
-                            ${msg.sender_blocked ? 'Débloquer' : 'Bloquer'}
-                        </button>
-                        <button class="btn btn-danger" onclick="deleteMessage(${msg.id})" style="font-size: 0.8em; padding: 5px 15px;">
-                            Supprimer
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            };
         }
 
-        async function loadAdminStats() {
-            if (!adminToken) return;
-
-            try {
-                const response = await axios.get(`${API_URL}/admin/stats`, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
-
-                const stats = response.data;
-                document.getElementById('statsContainer').style.display = 'grid';
-                document.getElementById('totalMessages').textContent = stats.total_messages;
-                document.getElementById('totalUsers').textContent = stats.total_users;
-                document.getElementById('messagesToday').textContent = stats.messages_today;
-                document.getElementById('blockedUsers').textContent = stats.blocked_users;
-            } catch (error) {
-                console.error('Erreur chargement stats:', error);
-            }
+        // Admin
+        function isAdminLoggedIn() { return sessionStorage.getItem('adminLoggedIn') === 'true'; }
+        function loginAsAdmin() {
+            if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                document.getElementById('adminLoginForm').classList.add('hidden');
+                document.getElementById('adminContent').classList.remove('hidden');
+                showNotification('✅ Connecté admin', 'success');
+                displayAdminMessages();
+            } else { showNotification('❌ Mot de passe incorrect', 'error'); }
         }
-
-        async function toggleBlockUser(userId) {
-            if (!confirm('Confirmer le blocage/déblocage de cet utilisateur?')) return;
-
-            try {
-                await axios.post(`${API_URL}/admin/users/${userId}/toggle-block`, {}, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
-                
-                showNotification('✅ Statut de l\'utilisateur mis à jour', 'success');
-                loadAdminMessages();
-                loadAdminStats();
-            } catch (error) {
-                showNotification('Erreur lors du blocage', 'error');
-            }
-        }
-
-        async function deleteMessage(messageId) {
-            if (!confirm('Supprimer ce message?')) return;
-
-            try {
-                await axios.delete(`${API_URL}/admin/messages/${messageId}`, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
-                
-                showNotification('✅ Message supprimé', 'success');
-                loadAdminMessages();
-                loadAdminStats();
-            } catch (error) {
-                showNotific
+        function logoutAdmin() {
+            sessionStorage.removeItem('adminLoggedIn');
+            document.getElementById('adminLog
