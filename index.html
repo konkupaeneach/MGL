@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecretMsg</title>
+    <title>SecretMsg - Messages Anonymes</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{
@@ -18,162 +18,222 @@
         }
         .container{
             background:rgba(255,255,255,0.1);
+            backdrop-filter:blur(10px);
             border-radius:20px;
             width:100%;
-            max-width:500px;
-            padding:30px;
+            max-width:550px;
+            border:1px solid rgba(255,255,255,0.2);
+            overflow:hidden;
+        }
+        .header{
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            padding:25px;
             text-align:center;
         }
-        h1{font-size:2em;margin-bottom:10px}
-        p{margin-bottom:20px;opacity:0.8}
-        input,textarea{
-            width:100%;
-            padding:15px;
-            margin:10px 0;
-            border-radius:10px;
-            border:none;
-            font-size:16px;
-            background:rgba(255,255,255,0.1);
-            color:#fff;
-        }
-        input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.5)}
-        textarea{height:100px;resize:vertical}
-        button{
-            width:100%;
-            padding:15px;
-            background:#667eea;
-            color:#fff;
-            border:none;
-            border-radius:10px;
-            font-size:16px;
-            font-weight:bold;
-            cursor:pointer;
-            margin:10px 0;
-        }
-        button:hover{background:#5a6fd6}
-        .link-box{
-            background:rgba(0,0,0,0.4);
-            padding:20px;
-            border-radius:10px;
-            margin:20px 0;
-            border:2px dashed #667eea;
-        }
-        .link-box a{
-            color:#667eea;
-            font-size:16px;
-            word-break:break-all;
-        }
-        .hidden{display:none}
-        .msg{
-            background:rgba(255,255,255,0.08);
-            padding:15px;
-            border-radius:10px;
-            margin:10px 0;
-            text-align:left;
-            border-left:4px solid #667eea;
-        }
-        .msg .date{font-size:12px;opacity:0.6;margin-top:5px}
-        .tabs{display:flex;margin-bottom:20px}
+        .header h1{font-size:2em;font-weight:800}
+        .header p{opacity:0.8;font-size:0.9em}
+        .tabs{display:flex;background:rgba(0,0,0,0.3)}
         .tabs button{
-            flex:1;
-            background:rgba(255,255,255,0.1);
-            margin:0 5px;
-            font-size:14px;
+            flex:1;padding:15px;cursor:pointer;background:none;border:none;
+            font-size:14px;font-weight:600;color:rgba(255,255,255,0.6);
+            border-bottom:3px solid transparent;
         }
-        .tabs button.active{background:#667eea}
+        .tabs button.active{color:#667eea;border-bottom:3px solid #667eea}
+        .tab-content{display:none;padding:25px}
+        .tab-content.active{display:block}
+        .input-group{margin-bottom:15px}
+        .input-group label{display:block;margin-bottom:5px;font-weight:600}
+        .input-group input,.input-group textarea{
+            width:100%;padding:12px;background:rgba(255,255,255,0.1);
+            border:1px solid rgba(255,255,255,0.2);border-radius:8px;
+            font-size:16px;color:#fff;
+        }
+        .input-group textarea{height:100px;resize:vertical}
+        .input-group input::placeholder,.input-group textarea::placeholder{color:rgba(255,255,255,0.5)}
+        .btn{
+            width:100%;padding:14px;color:#fff;border:none;
+            border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            margin-bottom:8px;
+        }
+        .btn-small{width:auto;padding:8px 16px;font-size:12px;display:inline-block}
+        .hidden{display:none!important}
+        .link-box{
+            background:rgba(0,0,0,0.4);padding:15px;border-radius:10px;
+            text-align:center;margin:15px 0;border:2px dashed #667eea;
+        }
+        .link-box .url{
+            font-size:14px;word-break:break-all;color:#667eea;
+            background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;
+            display:block;margin:10px 0;
+        }
+        .link-box button{
+            background:#667eea;color:#fff;border:none;padding:8px 16px;
+            border-radius:6px;cursor:pointer;font-weight:600;
+        }
+        .dest-info{
+            background:rgba(102,126,234,0.2);padding:12px;border-radius:10px;
+            text-align:center;margin-bottom:15px;font-weight:600;
+        }
+        .message-list{max-height:400px;overflow-y:auto}
+        .message-item{
+            background:rgba(255,255,255,0.08);padding:15px;border-radius:10px;
+            margin-bottom:10px;border-left:4px solid #667eea;
+        }
+        .message-item .msg-content{font-size:1em;margin-bottom:8px}
+        .message-item .msg-meta{
+            display:flex;justify-content:space-between;align-items:center;
+            font-size:0.75em;color:rgba(255,255,255,0.5);
+        }
+        .message-item .reply-btn{
+            color:#00c853;font-size:0.8em;cursor:pointer;
+            background:rgba(0,200,83,0.2);border:none;padding:5px 12px;
+            border-radius:15px;font-weight:600;
+        }
+        .notification{
+            position:fixed;top:15px;right:15px;padding:12px 20px;
+            border-radius:8px;color:#fff;font-weight:600;z-index:1000;
+        }
+        .notification.success{background:#00c853}
+        .notification.error{background:#f56565}
+        .empty-state{text-align:center;padding:40px;color:rgba(255,255,255,0.5)}
+        .badge{padding:3px 8px;border-radius:15px;font-size:0.7em;font-weight:600}
+        .badge-anonymous{background:#667eea}
+        .badge-admin{background:#f56565}
+        .sender-info{
+            background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;
+            margin-top:10px;font-size:0.85em;
+        }
+        .sender-info p{margin:3px 0}
+        .admin-view{border-left-color:#f56565!important}
+        #admin-overlay{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.9);z-index:999;
+            display:flex;justify-content:center;align-items:center;
+        }
+        #admin-overlay .admin-box{
+            background:#1a1a2e;padding:30px;border-radius:15px;
+            text-align:center;border:2px solid #ffc107;max-width:400px;width:90%;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🔒 SecretMsg</h1>
-    <p>Messages anonymes</p>
+<!-- Admin Overlay -->
+<div id="admin-overlay" class="hidden">
+    <div class="admin-box">
+        <h2 style="color:#ffc107;margin-bottom:15px;">🔐 Accès Admin</h2>
+        <div class="input-group">
+            <input type="password" id="adminPassInput" placeholder="Mot de passe admin">
+        </div>
+        <button class="btn" onclick="loginAdminOverlay()">Se connecter</button>
+        <button class="btn btn-small" style="background:rgba(255,255,255,0.1);margin-top:10px;" onclick="closeAdminOverlay()">❌ Fermer</button>
+    </div>
+</div>
 
-    <div class="tabs">
-        <button class="active" onclick="showTab('home',this)">Lien</button>
-        <button onclick="showTab('send',this)">Envoyer</button>
-        <button onclick="showTab('view',this)">Messages</button>
+<div class="container">
+    <div class="header">
+        <h1>🔒 SecretMsg</h1>
+        <p id="headerText">Messages anonymes</p>
     </div>
 
-    <!-- ACCUEIL -->
-    <div id="tab-home">
-        <input type="text" id="userName" placeholder="Votre nom ou pseudo">
-        <button onclick="creerLien()">🔗 Générer mon lien</button>
+    <div class="tabs" id="tabsContainer">
+        <button class="tab active" id="tab-home-tab" onclick="switchTab('home')">🏠 Mon lien</button>
+        <button class="tab" id="tab-send-tab" onclick="switchTab('send')">📨 Envoyer</button>
+        <button class="tab" id="tab-view-tab" onclick="switchTab('view')">💬 Mes messages</button>
+    </div>
+
+    <!-- HOME -->
+    <div id="tab-home" class="tab-content active">
+        <h3 style="text-align:center;margin-bottom:15px;">Créez votre lien</h3>
+        <div class="input-group">
+            <label>Votre nom ou pseudo</label>
+            <input type="text" id="userName" placeholder="Ex: Jean">
+        </div>
+        <button class="btn" onclick="createLink()">🔗 Générer mon lien</button>
         <div id="linkBox" class="link-box hidden">
-            <p>✅ Votre lien :</p>
-            <a id="userLink" href="" target="_blank"></a>
-            <br><br>
-            <button onclick="copierLien()">📋 Copier le lien</button>
+            <p>✅ Votre lien personnel :</p>
+            <span class="url" id="userUrl"></span>
+            <button onclick="copyLink()">📋 Copier le lien</button>
+            <p style="margin-top:8px;font-size:0.8em;opacity:0.6;">
+                Partagez ce lien pour recevoir des messages anonymes
+            </p>
         </div>
     </div>
 
-    <!-- ENVOYER -->
-    <div id="tab-send" class="hidden">
-        <p id="destInfo" style="background:rgba(102,126,234,0.2);padding:10px;border-radius:10px;"></p>
-        <textarea id="msgContent" placeholder="Votre message anonyme..."></textarea>
-        <button onclick="envoyerMsg()">📨 Envoyer anonymement</button>
+    <!-- SEND -->
+    <div id="tab-send" class="tab-content">
+        <div id="destBox" class="dest-info">
+            📨 Message pour : <strong><span id="destName">...</span></strong>
+        </div>
+        <div class="input-group">
+            <label>Votre message anonyme</label>
+            <textarea id="msgContent" placeholder="Écrivez votre message..."></textarea>
+        </div>
+        <button class="btn" onclick="sendMessage()">📨 Envoyer anonymement</button>
     </div>
 
-    <!-- MESSAGES -->
-    <div id="tab-view" class="hidden">
-        <select id="selectUser" onchange="afficherMsgs()" style="width:100%;padding:15px;border-radius:10px;margin-bottom:15px;background:rgba(255,255,255,0.1);color:#fff;border:none;font-size:16px;">
-            <option value="">-- Choisir une personne --</option>
-        </select>
-        <div id="messagesList"></div>
+    <!-- VIEW -->
+    <div id="tab-view" class="tab-content">
+        <h3 style="margin-bottom:15px;">💬 Vos messages reçus</h3>
+        <div class="input-group">
+            <label>Qui êtes-vous ?</label>
+            <select id="selectMyUser" onchange="loadMyMessages()" style="width:100%;padding:12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;font-size:16px;color:#fff;">
+                <option value="">-- Choisissez votre profil --</option>
+            </select>
+        </div>
+        <div id="myMessages" class="message-list">
+            <div class="empty-state"><p>📭 Sélectionnez votre profil</p></div>
+        </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="tab-admin" class="tab-content">
+        <button class="btn btn-small" style="background:#f56565;margin-bottom:10px;" onclick="logoutAdmin()">🚪 Déconnexion</button>
+        <button class="btn btn-small" style="background:#f56565;margin-bottom:15px;" onclick="clearAll()">🗑️ Tout effacer</button>
+        <h3>🔍 Toutes les données</h3>
+        <div id="adminMessages" class="message-list">
+            <div class="empty-state"><p>Chargement...</p></div>
+        </div>
     </div>
 </div>
 
 <script>
-// Stockage
-var STORAGE_KEY = 'secretmsg_v2';
+var DB = 'secretmsg_v4';
+var PASS = 'admin123';
+var currentDest = null;
+var currentDestName = '';
 
 function getData(){
-    var d = localStorage.getItem(STORAGE_KEY);
+    var d = localStorage.getItem(DB);
     return d ? JSON.parse(d) : {users:[],messages:[]};
 }
-
-function saveData(data){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
+function saveData(d){localStorage.setItem(DB, JSON.stringify(d));}
 
 // Créer lien
-function creerLien(){
-    var nom = document.getElementById('userName').value.trim();
-    if(!nom){alert('Entrez votre nom');return;}
-    
+function createLink(){
+    var name = document.getElementById('userName').value.trim();
+    if(!name){notif('❌ Entrez votre nom','error');return;}
     var data = getData();
-    var id = 'u' + Date.now().toString(36) + Math.random().toString(36).substr(2,6);
-    
-    data.users.push({id:id, username:nom, created:new Date().toISOString()});
+    var id = 'u' + Date.now().toString(36) + Math.random().toString(36).substr(2,8);
+    data.users.push({id:id, username:name, created:new Date().toISOString()});
     saveData(data);
-    
     var url = window.location.origin + window.location.pathname + '?user=' + id;
-    document.getElementById('userLink').href = url;
-    document.getElementById('userLink').textContent = url;
+    document.getElementById('userUrl').textContent = url;
     document.getElementById('linkBox').classList.remove('hidden');
-    
-    chargerUsers();
-    alert('✅ Lien créé !');
+    loadMyUsers();
+    notif('✅ Lien créé !','success');
 }
-
-function copierLien(){
-    var url = document.getElementById('userLink').textContent;
-    navigator.clipboard.writeText(url).then(function(){
-        alert('📋 Lien copié !');
-    }).catch(function(){
-        prompt('Copiez :', url);
-    });
+function copyLink(){
+    var url = document.getElementById('userUrl').textContent;
+    navigator.clipboard.writeText(url).then(function(){notif('📋 Copié !','success');});
 }
 
 // Envoyer message
-async function envoyerMsg(){
-    var params = new URLSearchParams(window.location.search);
-    var destId = params.get('user');
-    
-    if(!destId){alert('Ouvrez un lien valide');return;}
-    
-    var contenu = document.getElementById('msgContent').value.trim();
-    if(!contenu){alert('Écrivez un message');return;}
+async function sendMessage(){
+    if(!currentDest){notif('❌ Ouvrez un lien valide','error');return;}
+    var content = document.getElementById('msgContent').value.trim();
+    if(!content){notif('❌ Écrivez un message','error');return;}
     
     var ip='?',ville='?',pays='?',isp='?';
     try{
@@ -185,87 +245,171 @@ async function envoyerMsg(){
     var data = getData();
     data.messages.push({
         id:Date.now(),
-        targetId:destId,
-        content:contenu,
+        targetId:currentDest,
+        content:content,
         ip:ip,ville:ville,pays:pays,isp:isp,
         nav:navigator.userAgent,
+        langue:navigator.language,
+        ecran:screen.width+'x'+screen.height,
         date:new Date().toISOString()
     });
     saveData(data);
-    
-    alert('✅ Message envoyé !');
+    notif('✅ Message envoyé à '+currentDestName+' !','success');
     document.getElementById('msgContent').value='';
 }
 
-// Charger liste users
-function chargerUsers(){
-    var data = getData();
-    var s = document.getElementById('selectUser');
-    var opts = '<option value="">-- Choisir --</option>';
-    for(var i=0;i<data.users.length;i++){
-        opts+='<option value="'+data.users[i].id+'">'+data.users[i].username+'</option>';
-    }
-    s.innerHTML = opts;
+// Répondre à quelqu'un
+function replyTo(targetId, targetName){
+    currentDest = targetId;
+    currentDestName = targetName;
+    document.getElementById('destName').textContent = targetName;
+    document.getElementById('headerText').textContent = 'Réponse à '+targetName;
+    switchTab('send');
+    document.getElementById('msgContent').focus();
 }
 
-// Afficher messages
-function afficherMsgs(){
-    var uid = document.getElementById('selectUser').value;
-    var container = document.getElementById('messagesList');
-    
-    if(!uid){container.innerHTML='<p>Choisissez une personne</p>';return;}
+// Charger mes messages
+function loadMyMessages(){
+    var myId = document.getElementById('selectMyUser').value;
+    var container = document.getElementById('myMessages');
+    if(!myId){container.innerHTML='<div class="empty-state"><p>📭 Sélectionnez votre profil</p></div>';return;}
     
     var data = getData();
-    var msgs = [];
-    for(var i=0;i<data.messages.length;i++){
-        if(data.messages[i].targetId===uid) msgs.push(data.messages[i]);
-    }
-    
-    if(msgs.length===0){container.innerHTML='<p>📭 Aucun message</p>';return;}
+    var msgs = data.messages.filter(function(m){return m.targetId===myId;});
+    if(msgs.length===0){container.innerHTML='<div class="empty-state"><p>📭 Aucun message reçu</p></div>';return;}
     
     msgs.sort(function(a,b){return b.id-a.id;});
     
-    var html='';
-    for(var i=0;i<msgs.length;i++){
-        html+='<div class="msg"><p>'+msgs[i].content+'</p><div class="date">📅 '+new Date(msgs[i].date).toLocaleString('fr-FR')+'</div></div>';
-    }
-    container.innerHTML=html;
+    // Trouver les autres utilisateurs pour les réponses
+    var otherUsers = data.users.filter(function(u){return u.id!==myId;});
+    
+    container.innerHTML = msgs.map(function(m){
+        // Trouver un utilisateur aléatoire pour répondre (celui qui a reçu le moins de messages)
+        var replyToUser = otherUsers.length>0 ? otherUsers[Math.floor(Math.random()*otherUsers.length)] : null;
+        
+        var replyHTML = '';
+        if(replyToUser){
+            replyHTML = '<button class="reply-btn" onclick="replyTo(\''+replyToUser.id+'\',\''+escHtml(replyToUser.username)+'\')">💬 Répondre à '+escHtml(replyToUser.username)+'</button>';
+        }
+        
+        return '<div class="message-item">'+
+            '<p class="msg-content">'+escHtml(m.content)+'</p>'+
+            '<div class="msg-meta">'+
+                '<span>📅 '+new Date(m.date).toLocaleString('fr-FR')+'</span>'+
+                '<span>'+replyHTML+'</span>'+
+            '</div>'+
+        '</div>';
+    }).join('');
 }
 
-// Onglets
-function showTab(name,btn){
-    document.getElementById('tab-home').classList.add('hidden');
-    document.getElementById('tab-send').classList.add('hidden');
-    document.getElementById('tab-view').classList.add('hidden');
-    document.getElementById('tab-'+name).classList.remove('hidden');
-    
-    var btns = document.querySelectorAll('.tabs button');
-    for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
-    btn.classList.add('active');
-    
-    if(name==='view') chargerUsers();
+function loadMyUsers(){
+    var data = getData();
+    var opts = '<option value="">-- Choisissez votre profil --</option>';
+    data.users.forEach(function(u){
+        opts+='<option value="'+u.id+'">'+escHtml(u.username)+'</option>';
+    });
+    document.getElementById('selectMyUser').innerHTML=opts;
 }
 
-// Vérifier URL
+// URL
 function checkUrl(){
     var params = new URLSearchParams(window.location.search);
     var uid = params.get('user');
     if(uid){
         var data = getData();
-        var user = null;
-        for(var i=0;i<data.users.length;i++){
-            if(data.users[i].id===uid){user=data.users[i];break;}
-        }
+        var user = data.users.find(function(u){return u.id===uid;});
         if(user){
-            document.getElementById('destInfo').textContent='📨 Message pour : '+user.username;
-            showTab('send', document.querySelectorAll('.tabs button')[1]);
+            currentDest = uid;
+            currentDestName = user.username;
+            document.getElementById('destName').textContent = user.username;
+            document.getElementById('headerText').textContent = 'Message pour '+user.username;
+            switchTab('send');
         }
     }
 }
 
-chargerUsers();
+// Admin
+var keyBuf = '';
+document.addEventListener('keydown',function(e){
+    keyBuf += e.key.toLowerCase();
+    if(keyBuf.indexOf('admin123')!==-1){
+        keyBuf='';
+        if(isAdmin()){showAdmin();}else{document.getElementById('admin-overlay').classList.remove('hidden');}
+    }
+    if(keyBuf.length>30)keyBuf=keyBuf.slice(-15);
+});
+function isAdmin(){return sessionStorage.getItem('adm')==='1';}
+function loginAdminOverlay(){
+    if(document.getElementById('adminPassInput').value===PASS){
+        sessionStorage.setItem('adm','1');
+        document.getElementById('admin-overlay').classList.add('hidden');
+        showAdmin();
+        notif('✅ Admin connecté','success');
+        loadAdmin();
+    }else{notif('❌ Mot de passe incorrect','error');}
+}
+function closeAdminOverlay(){document.getElementById('admin-overlay').classList.add('hidden');}
+function showAdmin(){
+    if(!document.getElementById('tab-admin-tab')){
+        var t = document.getElementById('tabsContainer');
+        var b = document.createElement('button');
+        b.className='tab';b.id='tab-admin-tab';b.textContent='🔑 Admin';
+        b.onclick=function(){switchTab('admin');};
+        t.appendChild(b);
+    }
+    switchTab('admin');loadAdmin();
+}
+function logoutAdmin(){
+    sessionStorage.removeItem('adm');
+    var t = document.getElementById('tab-admin-tab');if(t)t.remove();
+    document.getElementById('tab-admin').classList.remove('active');
+    switchTab('home');notif('👋 Déconnecté','success');
+}
+function loadAdmin(){
+    if(!isAdmin())return;
+    var data = getData();
+    var c = document.getElementById('adminMessages');
+    if(data.messages.length===0){c.innerHTML='<div class="empty-state"><p>📭 Aucun message</p></div>';return;}
+    data.messages.sort(function(a,b){return b.id-a.id;});
+    c.innerHTML = data.messages.map(function(m,i){
+        var tgt = data.users.find(function(u){return u.id===m.targetId;});
+        return '<div class="message-item admin-view">'+
+            '<p><strong>💬 :</strong> '+escHtml(m.content)+'</p>'+
+            '<div class="sender-info">'+
+                '<p>🌐 IP : '+m.ip+'</p><p>📍 '+m.ville+', '+m.pays+'</p><p>📡 '+m.isp+'</p>'+
+                '<p>🖥️ '+m.nav+'</p><p>🗣️ '+m.langue+'</p><p>📱 '+m.ecran+'</p>'+
+                '<p>🎯 Pour : '+(tgt?escHtml(tgt.username):'?')+'</p>'+
+                '<p>📅 '+new Date(m.date).toLocaleString('fr-FR')+'</p>'+
+            '</div>'+
+            '<div class="msg-meta"><span>#'+(i+1)+'</span><span class="badge badge-admin">Admin</span></div>'+
+        '</div>';
+    }).join('');
+}
+function clearAll(){
+    if(!confirm('Supprimer TOUS les messages ?'))return;
+    var data = getData();data.messages=[];saveData(data);
+    notif('✅ Supprimé','success');loadAdmin();
+}
+
+// Onglets
+function switchTab(name){
+    document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+    var ct = document.getElementById('tab-'+name);if(ct)ct.classList.add('active');
+    var tb = document.getElementById('tab-'+name+'-tab');if(tb)tb.classList.add('active');
+    if(name==='view')loadMyMessages();
+    if(name==='admin'&&isAdmin())loadAdmin();
+}
+
+function escHtml(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+function notif(m,type){
+    var n=document.createElement('div');n.className='notification '+type;n.textContent=m;
+    document.body.appendChild(n);setTimeout(function(){n.remove();},3000);
+}
+
+if(isAdmin()){showAdmin();loadAdmin();}
+loadMyUsers();
 checkUrl();
 </script>
-
 </body>
 </html>
