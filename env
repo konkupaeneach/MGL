@@ -1,0 +1,9 @@
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=votre_mot_de_passe
+DB_NAME=secretmsg
+JWT_SECRET=votre_secret_jwt_tres_long_et_aleatoire
+ADMIN_EMAIL=admin@secretmsg.com
+ADMIN_PASSWORD=Admin123!
+SESSION_SECRET=session_secrete_aleatoire
+PORT=3000
