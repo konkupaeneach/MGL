@@ -1,13 +1,30 @@
-# SecretMsg Pro - Installation Guide
+# 🔒 SecretMsg
 
-## Prérequis
-- Node.js 16+
-- MySQL 8.0+
-- npm ou yarn
+Site de messages anonymes avec panneau administrateur pour voir les expéditeurs.
 
-## Installation
+## 🚀 Fonctionnalités
 
-1. **Cloner le projet**
-```bash
-git clone [votre-repo]
-cd secretmsg
+- 📨 Envoi de messages anonymes
+- 👀 Vue publique des messages
+- 🔑 Panneau admin protégé
+- 👤 L'admin voit qui envoie les messages
+- 📱 Fonctionne sur mobile et ordinateur
+
+## 🔐 Accès Admin
+
+- Mot de passe par défaut : `admin123`
+- ⚠️ Changez-le dans le code !
+
+## 📦 Installation
+
+1. Téléchargez le fichier `index.html`
+2. Ouvrez-le dans votre navigateur
+3. Ou déployez sur Railway/Netlify/GitHub Pages
+
+## 🌐 Démo en ligne
+
+[https://votre-lien.railway.app](https://votre-lien.railway.app)
+
+## 📝 Licence
+
+Libre d'utilisation
