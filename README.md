@@ -1,2 +1,2 @@
 # MGL
-Une application pour envoyer des messages anonymes avec sécurité 
+Une application pour envoyer des messages anonymes avec sécurités
